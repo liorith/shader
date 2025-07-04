@@ -2,14 +2,23 @@
 const canvas = document.getElementById("shader-canvas");
 const gl = canvas.getContext("webgl", { powerPreference: "high-performance" });
 
-// Shader-Parameter (können von UI geändert werden)
+// Shader-Parameter
 const shaderParams = {
-  SPIN_SPEED: 7.0,
-  PIXEL_FILTER: 10000.0,
-  COLOUR_1: [0.871, 0.267, 0.254, 1.0],
-  COLOUR_2: [0.124, 0.254, 0.865, 1.0],
-  COLOUR_3: [0.100, 0.100, 0.100, 1.0],
-  QUALITY: 100
+  SPIN_SPEED: 5.0,
+  PIXEL_FILTER: 5000.0,
+  COLOUR_1: [0.924, 0.232, 0.228, 1.0],
+  COLOUR_2: [0.124, 0.185, 0.941, 1.0],
+  COLOUR_3: [0.050, 0.050, 0.050, 1.0],
+  QUALITY: 100,
+  CONTRAST: 1.0
+};
+
+// Standardwerte für Einstellungen
+const defaultSettings = {
+  SPIN_SPEED: 5.0,
+  PIXEL_FILTER: 5000.0,
+  QUALITY: 100,
+  CONTRAST: 1.0
 };
 
 // Performance-Einstellungen
@@ -40,10 +49,13 @@ const fpsSlider = document.getElementById("fpsSlider");
 const fpsInput = document.getElementById("fpsInput");
 const qualitySlider = document.getElementById("qualitySlider");
 const qualityInput = document.getElementById("qualityInput");
+const contrastSlider = document.getElementById("contrastSlider");
+const contrastInput = document.getElementById("contrastInput");
 const speedValue = document.getElementById("speedValue");
 const pixelValue = document.getElementById("pixelValue");
 const fpsValue = document.getElementById("fpsValue");
 const qualityValue = document.getElementById("qualityValue");
+const contrastValue = document.getElementById("contrastValue");
 const presetButtons = document.querySelectorAll(".preset-button");
 const performanceToggle = document.getElementById("performanceToggle");
 const customColor1Input = document.getElementById("customColor1");
@@ -52,20 +64,72 @@ const customColor3Input = document.getElementById("customColor3");
 const customPresetButton = document.querySelector(".preset-button[data-preset='custom']");
 const shaderTypeButtons = document.querySelectorAll(".type-button");
 const elementsWithTooltips = document.querySelectorAll("[data-tooltip]");
+const resetSettingsButton = document.getElementById("resetSettingsButton");
+const pauseToggle = document.getElementById("pauseToggle");
+
+// Neue UI Elemente für Panels und Panel Buttons
+const panelButtons = document.querySelectorAll(".panel-button");
+const controlPanels = document.querySelectorAll(".control-panel");
 
 // UI Event Listeners
 menuButton.addEventListener("click", () => {
-  menuButton.classList.toggle("open");
-  controlPanel.classList.toggle("open");
+  // menuButton.classList.toggle("open"); // Hauptmenü-Button steuert jetzt die Panel-Buttons
+  // controlPanel.classList.toggle("open"); // controlPanel wird nicht mehr direkt verwendet
+
+  // Blendet alle Panels und Panel-Buttons ein/aus
+  const isMenuOpen = menuButton.classList.toggle("open");
+  panelButtons.forEach(button => button.style.display = isMenuOpen ? "flex" : "none");
+
+  // Schließt Panels wenn Hauptmenü geschlossen wird
+  if (!isMenuOpen) {
+    controlPanels.forEach(panel => panel.classList.remove("active"));
+    panelButtons.forEach(button => button.classList.remove("active"));
+  }
 });
+
+// Event Listener für Panel Buttons
+panelButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const targetPanelId = button.dataset.panel + "Panel";
+    const targetPanel = document.getElementById(targetPanelId);
+
+    // Panels ein-/ausblenden und aktive Klasse setzen
+    controlPanels.forEach(panel => {
+      if (panel.id === targetPanelId) {
+        panel.classList.toggle("active");
+      } else {
+        panel.classList.remove("active");
+      }
+    });
+
+    // Aktiven Zustand für Buttons setzen
+    panelButtons.forEach(btn => {
+      if (btn === button) {
+        btn.classList.toggle("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+     // Wenn alle Panels geschlossen sind, Hauptmenü-Button Zustand anpassen (optional)
+     const anyPanelActive = Array.from(controlPanels).some(panel => panel.classList.contains("active"));
+     if (!anyPanelActive) {
+        // Optional: Hauptmenü-Button als inaktiv markieren oder ähnliches
+     }
+  });
+});
+
+// Initial: Alle Panels und Panel Buttons ausblenden
+controlPanels.forEach(panel => panel.classList.remove("active"));
+panelButtons.forEach(button => button.style.display = "none");
 
 // Geschwindigkeit-Slider und Input
 function updateSpeed(value) {
   const speed = parseFloat(value);
   shaderParams.SPIN_SPEED = speed;
-  speedValue.textContent = speed.toFixed(1);
+  speedValue.textContent = Math.round(speed * 10) / 10;
   speedSlider.value = speed;
-  speedInput.value = speed;
+  speedInput.value = speed.toFixed(1);
 }
 
 speedSlider.addEventListener("input", () => {
@@ -174,12 +238,45 @@ qualityInput.addEventListener("wheel", (event) => {
   updateQuality(clampedValue);
 }, { passive: true });
 
+// Kontrast-Slider und Input
+function updateContrast(value) {
+  const contrast = parseFloat(value);
+  shaderParams.CONTRAST = contrast;
+  contrastValue.textContent = Math.round(contrast * 10) / 10;
+  contrastSlider.value = contrast;
+  contrastInput.value = contrast.toFixed(1);
+}
+
+contrastSlider.addEventListener("input", () => {
+  updateContrast(contrastSlider.value);
+});
+
+contrastInput.addEventListener("input", () => {
+  const value = Math.min(Math.max(parseFloat(contrastInput.value) || 0.5, 0.5), 2.0);
+  updateContrast(value);
+});
+
+// Kontrast-Input Scroll-Listener
+contrastInput.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  const step = parseFloat(contrastInput.step);
+  const currentValue = parseFloat(contrastInput.value);
+  const newValue = event.deltaY < 0 ? currentValue + step : currentValue - step;
+  const clampedValue = Math.min(Math.max(newValue, parseFloat(contrastInput.min)), parseFloat(contrastInput.max));
+  updateContrast(clampedValue);
+}, { passive: true });
+
 // Performance-Modus
 performanceToggle.addEventListener("change", () => {
   performanceMode.active = performanceToggle.checked;
-  performanceMode.shaderPaused = !performanceMode.active;
-  
+  // Deaktiviere/Aktiviere den Pause-Umschalter basierend auf dem Aktiv-Umschalter
+  pauseToggle.disabled = !performanceMode.active;
   if (!performanceMode.active) {
+    // Wenn der Shader deaktiviert wird, sorge dafür, dass er nicht pausiert ist und stoppe das Rendering
+    performanceMode.shaderPaused = false;
+    pauseToggle.checked = false; // Setze den Pause-Umschalter zurück
+    // Hier wird das Rendering bereits durch die render-Funktion gestoppt, wenn !performanceMode.active
+
     // Speichere aktuelle Einstellungen
     performanceMode.backgroundMode.originalPixelFilter = shaderParams.PIXEL_FILTER;
     performanceMode.backgroundMode.originalSpinSpeed = shaderParams.SPIN_SPEED;
@@ -202,7 +299,7 @@ performanceToggle.addEventListener("change", () => {
     gl.clearColor(0.1, 0.1, 0.1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
   } else {
-    // Stelle ursprüngliche Einstellungen wieder her
+    // Stelle ursprüngliche Einstellungen wieder her, wenn der Shader aktiviert wird
     if (performanceMode.backgroundMode.originalPixelFilter) {
       shaderParams.PIXEL_FILTER = performanceMode.backgroundMode.originalPixelFilter;
       shaderParams.SPIN_SPEED = performanceMode.backgroundMode.originalSpinSpeed;
@@ -343,7 +440,7 @@ function animateColorChange(targetColors) {
     COLOUR_3: [...shaderParams.COLOUR_3]
   };
   
-  const duration = 1000; // 1 Sekunde für die Animation
+  const duration = 1000;
   const startTime = performance.now();
   
   function updateColors(currentTime) {
@@ -456,12 +553,18 @@ shaderTypeButtons.forEach(button => {
 let lastFrameTime = 0;
 const targetFPSLowPower = 30; // Niedrigere FPS im Stromsparmodus
 
+// Event Listener für Shader Pause Toggle
+pauseToggle.addEventListener("change", () => {
+  performanceMode.shaderPaused = pauseToggle.checked;
+  // Die render-Funktion wird die Animation basierend auf performanceMode.shaderPaused steuern
+});
+
 // === Render Loop ===
 function render(currentTime) {
   performanceMode.frameCount++;
 
-  // Wenn der Shader pausiert ist oder kein Programm aktiv, nur UI aktualisieren
-  if (performanceMode.shaderPaused || !currentProgram) {
+  // Wenn der Shader nicht aktiv oder pausiert ist oder kein Programm aktiv, nur UI aktualisieren und Render Loop fortsetzen
+  if (!performanceMode.active || performanceMode.shaderPaused || !currentProgram) {
     requestAnimationFrame(render);
     return;
   }
@@ -492,6 +595,7 @@ function render(currentTime) {
   gl.uniform4fv(currentUniforms.uColour2, shaderParams.COLOUR_2);
   gl.uniform4fv(currentUniforms.uColour3, shaderParams.COLOUR_3);
   gl.uniform1f(currentUniforms.uQuality, shaderParams.QUALITY); // Übergabe des Qualitätsparameters
+  gl.uniform1f(currentUniforms.uContrast, shaderParams.CONTRAST);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   requestAnimationFrame(render);
@@ -517,4 +621,19 @@ elementsWithTooltips.forEach(element => {
       }
     }, 50);
   });
+});
+
+// Event Listener für Reset Button
+resetSettingsButton.addEventListener("click", () => {
+  updateSpeed(defaultSettings.SPIN_SPEED);
+  updatePixel(defaultSettings.PIXEL_FILTER);
+  updateQuality(defaultSettings.QUALITY);
+  updateContrast(defaultSettings.CONTRAST);
+
+  // Optional: Setze Farbpreset auf Standard zurück
+  // Finde den Button mit data-preset='original' und simuliere einen Klick
+  const originalPresetButton = document.querySelector(".preset-button[data-preset='original']");
+  if (originalPresetButton) {
+    originalPresetButton.click();
+  }
 }); 

@@ -2,14 +2,26 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Shader Background</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Project Shader | Liorith.com</title>
+  <meta name="description" content="A simple Shader with much Effects ans Settings.">
+  <meta name="author" content="liorith.com">
+  <link rel="icon" href="assets/favicon.ico">
 
-<!--META-->
+  <meta property="og:title" content="Project Shader | Liorith.com">
+  <meta property="og:description" content="A simple Shader with much Effects ans Settings.">
+  <meta property="og:image" content="/assets/image.png">
+  <meta property="og:url" content="https://liorith.com/shader">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="liorith.com/shader">
 
-
-
-  <link rel="stylesheet" href="assets/styles.css">
+  <!-- Neue CSS-Dateien -->
+  <link rel="stylesheet" href="assets/base.css">
+  <link rel="stylesheet" href="assets/menu.css">
+  <link rel="stylesheet" href="assets/controls.css">
+  <link rel="stylesheet" href="assets/tooltip.css">
 </head>
 <body>
   <canvas id="shader-canvas"></canvas>
@@ -22,116 +34,166 @@
     </div>
   </div>
   
-  <div class="control-panel" id="controlPanel">
-    <div class="control-group">
-      <h3>
-        <svg class="performance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12" y2="8"></line>
-        </svg>
-        Shader
-      </h3>
-      <div class="performance-toggle" data-tooltip="Schaltet den Shader-Effekt ein oder aus, um Ressourcen zu sparen.">
-        <label for="performanceToggle">Shader aktivieren</label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="performanceToggle" checked>
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
+  <!-- Neue Buttons für die Panels -->
+  <div class="panel-buttons">
+    <div class="panel-button" id="shaderPanelButton" data-panel="shader">
+      Shader
     </div>
-
-    <div class="control-group">
-      <h3>Performance</h3>
-      <div class="slider-container">
-        <div class="slider-label-row">
-          <label for="qualitySlider" data-tooltip="Passt die Detailtiefe und Komplexität des Shader-Effekts an.">Qualität</label>
-          <div class="value-display" id="qualityValue">100</div>
-        </div>
-        <div class="slider-input-group">
-          <input type="range" id="qualitySlider" min="1" max="100" value="100" step="1">
-          <input type="number" id="qualityInput" min="1" max="100" value="100" step="1">
-        </div>
-      </div>
+    <div class="panel-button" id="colorsPanelButton" data-panel="colors">
+      Farben
     </div>
-
-    <div class="control-group">
-      <h3>Shader Typ</h3>
-      <div class="shader-type-selector">
-        <button class="type-button active" data-type="radial" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Radial</button>
-        <button class="type-button" data-type="linear" disabled title="Coming soon" data-tooltip="Horizontaler Farbverlauf (in Entwicklung)">Linear</button>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <h3>Animation</h3>
-      <div class="slider-container">
-        <div class="slider-label-row">
-          <label for="speedSlider" data-tooltip="Steuert die Geschwindigkeit, mit der sich der Shader-Effekt bewegt und verändert.">Geschwindigkeit</label>
-          <div class="value-display" id="speedValue">2.5</div>
-        </div>
-        <div class="slider-input-group">
-          <input type="range" id="speedSlider" min="0" max="15" value="2.5" step="0.1">
-          <input type="number" id="speedInput" min="0" max="15" value="2.5" step="0.1">
-        </div>
-      </div>
-      <div class="slider-container">
-        <div class="slider-label-row">
-          <label for="fpsSlider" data-tooltip="Legt die maximale Anzahl der Bilder pro Sekunde fest, die gerendert werden.">Framerate</label>
-          <div class="value-display" id="fpsValue">60</div>
-        </div>
-        <div class="slider-input-group">
-          <input type="range" id="fpsSlider" min="0" max="120" value="60" step="1">
-          <input type="number" id="fpsInput" min="0" max="120" value="60" step="1">
-        </div>
-      </div>
-    </div>
-    
-    <div class="control-group">
-      <h3>Effekte</h3>
-      <div class="slider-container">
-        <div class="slider-label-row">
-          <label for="pixelSlider" data-tooltip="Passt die Granularität oder 'Pixeligkeit' des Shader-Effekts an.">Pixeligkeit</label>
-          <div class="value-display" id="pixelValue">2.5k</div>
-        </div>
-        <div class="slider-input-group">
-          <input type="range" id="pixelSlider" min="50" max="5000" value="2500" step="50">
-          <input type="number" id="pixelInput" min="50" max="5000" value="2500" step="50">
-        </div>
-      </div>
-    </div>
-    
-    <div class="control-group">
-      <h3 data-tooltip="Wählen Sie aus vordefinierten Farbpaletten oder erstellen Sie Ihre eigenen.">Farbpresets</h3>
-      <div class="preset-grid">
-        <button class="preset-button active" data-preset="original" data-tooltip="Klassische Farbkombination mit Rot, Blau und Dunkelgrau">Original</button>
-        <button class="preset-button" data-preset="sunset" data-tooltip="Warme Sonnenuntergangsfarben in Orange, Pink und Dunkelviolett">Sunset</button>
-        <button class="preset-button" data-preset="ocean" data-tooltip="Erfrischende Ozeanfarben in Blau und Türkis">Ocean</button>
-        <button class="preset-button" data-preset="forest" data-tooltip="Natürliche Waldtöne in Grün und Oliv">Forest</button>
-        <button class="preset-button" data-preset="lavender" data-tooltip="Sanfte Lavendeltöne in Violett und Lila">Lavender</button>
-        <button class="preset-button" data-preset="golden" data-tooltip="Warme Goldtöne mit Kupfer und Bronze">Golden</button>
-        <button class="preset-button" data-preset="mint" data-tooltip="Erfrischende Minztöne in Türkis und Grün">Mint</button>
-        <button class="preset-button" data-preset="neon" data-tooltip="Leuchtende Neonfarben in Pink und Grün">Neon</button>
-        <button class="preset-button" data-preset="custom" data-tooltip="Erstellen Sie Ihre eigene individuelle Farbpalette">Benutzerdef.</button>
-      </div>
-      <div class="custom-color-section">
-        <h4>Benutzerdefiniert</h4>
-        <div class="color-picker-group">
-          <label for="customColor1" data-tooltip="Die Hauptfarbe des Shaders.">Primär:</label>
-          <input type="color" id="customColor1" value="#de4441">
-        </div>
-        <div class="color-picker-group">
-          <label for="customColor2" data-tooltip="Die Sekundärfarbe, die sich mit der Primärfarbe mischt.">Sekundär:</label>
-          <input type="color" id="customColor2" value="#1f40dd">
-        </div>
-        <div class="color-picker-group">
-          <label for="customColor3" data-tooltip="Die Akzentfarbe, die in den Übergangsbereichen erscheint.">Akzent:</label>
-          <input type="color" id="customColor3" value="#191919">
-        </div>
-      </div>
+    <div class="panel-button" id="slidersPanelButton" data-panel="sliders">
+      Slider
     </div>
   </div>
-  
+
+  <div class="control-panel-container">
+
+    <!-- Shader Panel -->
+    <div class="control-panel" id="shaderPanel" data-panel="shader">
+      <div class="control-group">
+        <h3>
+          <svg class="performance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="8"></line>
+          </svg>
+          Shader
+        </h3>
+        <div class="performance-toggle" data-tooltip="Schaltet den Shader-Effekt ein oder aus, um Ressourcen zu sparen.">
+          <label for="performanceToggle">Shader aktivieren</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="performanceToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="performance-toggle" data-tooltip="Hält die Animation des Shaders an.">
+          <label for="pauseToggle">Shader pausieren</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pauseToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="control-group">
+        <h3>Shader Typ</h3>
+        <div class="shader-type-selector">
+          <button class="type-button active" data-type="radial" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Radial</button>
+          <button class="type-button" data-type="linear" disabled title="Coming soon" data-tooltip="Horizontaler Farbverlauf (in Entwicklung)">Linear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Farben Panel -->
+    <div class="control-panel" id="colorsPanel" data-panel="colors">
+       <!-- Color Presets and Controls -->
+      <div class="control-group">
+        <h3 data-tooltip="Wählen Sie aus vordefinierten Farbpaletten oder erstellen Sie Ihre eigenen.">Farbpresets</h3>
+        <div class="preset-grid">
+          <button class="preset-button active" data-preset="original" data-tooltip="Klassische Farbkombination mit Rot, Blau und Dunkelgrau">Original</button>
+          <button class="preset-button" data-preset="sunset" data-tooltip="Warme Sonnenuntergangsfarben in Orange, Pink und Dunkelviolett">Sunset</button>
+          <button class="preset-button" data-preset="ocean" data-tooltip="Erfrischende Ozeanfarben in Blau und Türkis">Ocean</button>
+          <button class="preset-button" data-preset="forest" data-tooltip="Natürliche Waldtöne in Grün und Oliv">Forest</button>
+          <button class="preset-button" data-preset="lavender" data-tooltip="Sanfte Lavendeltöne in Violett und Lila">Lavender</button>
+          <button class="preset-button" data-preset="golden" data-tooltip="Warme Goldtöne mit Kupfer und Bronze">Golden</button>
+          <button class="preset-button" data-preset="mint" data-tooltip="Erfrischende Minztöne in Türkis und Grün">Mint</button>
+          <button class="preset-button" data-preset="neon" data-tooltip="Leuchtende Neonfarben in Pink und Grün">Neon</button>
+          <button class="preset-button" data-preset="eye" data-tooltip="Augenkrebsmodus der viel zu grell ist">Spezial</button>
+          <button class="preset-button" data-preset="sepia" data-tooltip="Alte Farben mit bräunlichem Look">Sepia</button>
+          <button class="preset-button" data-preset="monochrom" data-tooltip="Eine Monochrome Schwarz-Weiß Palette">Monochrom</button>
+          <button class="preset-button" data-preset="custom" data-tooltip="Erstellen Sie Ihre eigene individuelle Farbpalette">Custom</button>
+        </div>
+        <div class="custom-color-section">
+          <h4>Benutzerdefiniert</h4>
+          <div class="color-picker-group">
+            <label for="customColor1" data-tooltip="Die Hauptfarbe des Shaders.">Primär:</label>
+            <input type="color" id="customColor1" value="#de4441">
+          </div>
+          <div class="color-picker-group">
+            <label for="customColor2" data-tooltip="Die Sekundärfarbe, die sich mit der Primärfarbe mischt.">Sekundär:</label>
+            <input type="color" id="customColor2" value="#1f40dd">
+          </div>
+          <div class="color-picker-group">
+            <label for="customColor3" data-tooltip="Die Akzentfarbe, die in den Übergangsbereichen erscheint.">Akzent:</label>
+            <input type="color" id="customColor3" value="#191919">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slider Panel -->
+    <div class="control-panel" id="slidersPanel" data-panel="sliders">
+      <!-- Performance Controls -->
+      <div class="control-group">
+        <h3>Performance</h3>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="qualitySlider" data-tooltip="Passt die Detailtiefe und Komplexität des Shader-Effekts an.">Qualität</label>
+            <div class="value-display" id="qualityValue">100</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="qualitySlider" min="1" max="100" value="100" step="1">
+            <input type="number" id="qualityInput" min="1" max="100" value="100" step="1">
+          </div>
+        </div>
+      </div>
+      <!-- Animation Controls -->
+      <div class="control-group">
+        <h3>Animation</h3>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="speedSlider" data-tooltip="Steuert die Geschwindigkeit, mit der sich der Shader-Effekt bewegt und verändert.">Geschwindigkeit</label>
+            <div class="value-display" id="speedValue">5.0</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="speedSlider" min="0" max="15" value="5.0" step="0.1">
+            <input type="number" id="speedInput" min="0" max="15" value="5.0" step="0.1">
+          </div>
+        </div>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="fpsSlider" data-tooltip="Legt die maximale Anzahl der Bilder pro Sekunde fest, die gerendert werden.">Framerate</label>
+            <div class="value-display" id="fpsValue">60</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="fpsSlider" min="0" max="120" value="60" step="1">
+            <input type="number" id="fpsInput" min="0" max="120" value="60" step="1">
+          </div>
+        </div>
+      </div>
+      <!-- Effect Controls -->
+      <div class="control-group">
+        <h3>Effekte</h3>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="pixelSlider" data-tooltip="Passt die Granularität oder 'Pixeligkeit' des Shader-Effekts an.">Granularität</label>
+            <div class="value-display" id="pixelValue">5k</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="pixelSlider" min="10" max="5000" value="5000" step="10">
+            <input type="number" id="pixelInput" min="10" max="5000" value="5000" step="10">
+          </div>
+        </div>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="contrastSlider" data-tooltip="Passt den Kontrast des Shader-Effekts an.">Kontrast</label>
+            <div class="value-display" id="contrastValue">1.0</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="contrastSlider" min="0.5" max="2.0" value="1.0" step="0.1">
+            <input type="number" id="contrastInput" min="0.5" max="2.0" value="1.0" step="0.1">
+          </div>
+        </div>
+      </div>
+      <!-- Settings Control Group -->
+      <div class="control-group">
+        <h3>Einstellungen</h3>
+        <button class="reset-button" id="resetSettingsButton">Standardeinstellungen wiederherstellen</button>
+      </div>
+    </div>
+
+  </div>
+
   <script src="assets/colors.js"></script>
   <script src="assets/shaders/radial.js"></script>
   <script src="assets/main.js"></script>

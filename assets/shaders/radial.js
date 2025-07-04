@@ -9,6 +9,7 @@ uniform vec4 uColour1;
 uniform vec4 uColour2;
 uniform vec4 uColour3;
 uniform float uQuality;
+uniform float uContrast;
 
 #define SPIN_ROTATION -2.0
 #define OFFSET vec2(0.0)
@@ -46,7 +47,7 @@ vec4 effect(vec2 screenSize, vec2 screen_coords) {
         uv  -= qualityFactor * (cos(uv.x + uv.y) - sin(uv.x*0.71 - uv.y));
     }
 
-    float contrast_mod = (0.25*3.5 + 0.5*SPIN_AMOUNT + 1.2);
+    float contrast_mod = (0.25*3.5 + 0.5*SPIN_AMOUNT + 1.2) * uContrast;
     float paint_res = min(2.0, max(0.0, length(uv)*0.035*contrast_mod));
     float c1p = max(0.0, 1.0 - contrast_mod*abs(1.0-paint_res));
     float c2p = max(0.0, 1.0 - contrast_mod*abs(paint_res));
@@ -61,7 +62,7 @@ void main() {
 }
 `;
 
-// === Shader Setup Helper Functions ===
+// Shader Setup Helper Functions
 function createShader(gl, type, source) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, source);
@@ -100,6 +101,7 @@ function setupShaderProgram(gl, vertexShader, fragmentShader, type) {
       uColour2: gl.getUniformLocation(program, "uColour2"),
       uColour3: gl.getUniformLocation(program, "uColour3"),
       uQuality: gl.getUniformLocation(program, "uQuality"),
+      uContrast: gl.getUniformLocation(program, "uContrast"),
     };
     return { program, uniforms };
   }
