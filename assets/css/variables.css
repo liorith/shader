@@ -1,0 +1,27 @@
+:root {
+  --bg-color: #000000;
+  --text-color: rgba(255, 255, 255, 0.9);
+  --accent-color: #4a9eff;
+
+  /* Control Menu */
+  --menu-bg: rgba(0, 0, 0, 0.5);
+  --border-color: rgba(255, 255, 255, 0.1);
+
+  /* Menu Items */
+  --slider-bg: rgba(255, 255, 255, 0.1);
+  --slider-thumb: #ffffff;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --button-bg: rgba(255, 255, 255, 0.05);
+  --hover-bg: rgba(255, 255, 255, 0.15);
+  --active-bg: rgba(74, 158, 255, 0.2);
+  --toggle-bg: rgba(0, 116, 249, 0.5);
+
+  /* Rendering Buttons */
+  --green: rgba(0, 255, 0, 0.25);
+  --green-hover: rgba(0, 255, 0, 0.5);
+  --yellow: rgba(255, 255, 0, 0.25);
+  --yellow-hover: rgba(255, 255, 0, 0.5);
+  --red: rgba(255, 0, 0, 0.25);
+  --red-hover: rgba(255, 0, 0, 0.5);
+  --warning: rgba(255, 150, 0, 0.33);
+}

@@ -4,12 +4,11 @@
   left: 20px;
   top: 20px;
   width: 300px;
-  z-index: 9999;
-  background-color: var(--bg-color);
-  backdrop-filter: blur(20px);
+  z-index: 1000;
+  background-color: var(--menu-bg);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: var(--shadow);
   transform: translateX(0);
   transition: transform 0.3s ease-in-out;
 }
@@ -47,14 +46,14 @@
 }
 
 .debug-menu .debug-label {
-  color: var(--text-color-secondary);
+  color: var(--text-color);
   font-weight: 500;
 }
 
 .debug-menu .debug-value {
   color: var(--text-color);
-  font-family: var(--monospace-font);
-  background: rgba(255, 255, 255, 0.1);
+  font-family: monospace;
+  background: var(--input-bg);
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -70,7 +69,7 @@
 }
 
 .debug-menu .debug-uniforms-grid {
-  display: none; /* Standardmäßig ausgeblendet */
+  display: none;
   grid-template-columns: 1fr;
   gap: 8px;
   margin-top: 10px;
@@ -82,163 +81,22 @@
   align-items: center;
   font-size: 13px;
   color: var(--text-color);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
   padding: 4px 8px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
 }
 
 .debug-menu .debug-uniform-label {
-  color: var(--text-color-secondary);
+  color: var(--text-color);
   font-weight: 500;
 }
 
 .debug-menu .debug-uniform-value {
   color: var(--text-color);
-  font-family: var(--monospace-font);
+  font-family: monospace;
   margin-left: 8px;
   word-break: break-all;
   text-align: right;
   flex-grow: 1;
 }
-
-/* Rendering Dialog Styles */
-.rendering-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  z-index: 1000;
-  max-width: 90%;
-  width: 400px;
-}
-
-.rendering-dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.rendering-dialog h2 {
-  margin: 0 0 1rem 0;
-  color: #fff;
-}
-
-.rendering-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.rendering-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.gpu-button {
-  background: #4CAF50;
-  color: white;
-}
-
-.software-button {
-  background: #f44336;
-  color: white;
-}
-
-.cpu-button {
-  background: #ff9800;
-  color: white;
-}
-
-.rendering-button:hover {
-  opacity: 0.9;
-}
-
-/* Error Dialog Styles */
-.error-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  z-index: 1000;
-  max-width: 90%;
-  width: 400px;
-}
-
-.error-dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.error-dialog h2 {
-  margin: 0 0 1rem 0;
-  color: #fff;
-}
-
-.error-dialog ul {
-  text-align: left;
-  margin: 1rem 0;
-  padding-left: 1.5rem;
-}
-
-.error-dialog li {
-  margin: 0.5rem 0;
-}
-
-.fallback-button {
-  background: #4CAF50;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 1rem;
-}
-
-.fallback-button:hover {
-  opacity: 0.9;
-}
-
-/* Rendering Warning Styles */
-.rendering-warning {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background: rgba(255, 165, 0, 0.9);
-  color: white;
-  padding: 1rem;
-  border-radius: 5px;
-  text-align: center;
-  z-index: 1000;
-  max-width: 300px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-} 

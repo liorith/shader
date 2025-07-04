@@ -1,5 +1,5 @@
-// GLSL Shader Code (Radial Fragment)
-const radialFragmentShaderSource = `
+// GLSL Shader Code (Wavy Fragment)
+const wavyFragmentShaderSource = `
 precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
@@ -20,12 +20,11 @@ vec4 effect(vec2 screenSize, vec2 screen_coords) {
     vec2 uv = (floor(screen_coords.xy*(1./pixel_size))*pixel_size - 0.5*screenSize.xy)/length(screenSize.xy);
     float uv_len = length(uv);
     
-    // Radial distortion with jitter
-    float angle = atan(uv.y, uv.x);
-    float radius = length(uv);
-    float jitter = sin(angle * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
-    radius += jitter;
-    uv = vec2(cos(angle), sin(angle)) * radius;
+    // Wavy distortion
+    float wave = sin(uv.x * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
+    uv.y += wave;
+    wave = cos(uv.y * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
+    uv.x += wave;
     
     // Compute noise loop
     vec2 uv_loop = uv * 30.0;
@@ -73,11 +72,11 @@ void main() {
 }
 `;
 
-// Funktion zur Initialisierung des Radial Shaders
-function initRadialShader(gl, vertexShader) {
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, radialFragmentShaderSource);
+// Funktion zur Initialisierung des Wavy Shaders
+function initWavyShader(gl, vertexShader) {
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, wavyFragmentShaderSource);
     if (fragmentShader) {
-        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'radial');
+        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'wavy');
         return { program, uniforms };
     }
     return { program: null, uniforms: null };

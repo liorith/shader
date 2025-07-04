@@ -60,7 +60,7 @@ const debugMode = {
     },
     uniforms: {}
   },
-  updateInterval: 250, // Update alle 250ms
+  updateInterval: 100, // Update alle 250ms
   lastUpdate: performance.now(),
   isUpdating: false,
   renderDurationTimes: [], // Array für die gemessene Zeit des Render-Aufrufs (nur gl.drawArrays Zeit - CPU-seitig)
@@ -143,20 +143,20 @@ if (rendererInfo) {
         if (rendererNameElement && vendorNameElement && renderingDialog) {
             rendererNameElement.textContent = renderer;
             vendorNameElement.textContent = vendor;
-            renderingDialog.style.display = 'block';
-            // Event Listener werden in initEventListeners hinzugefügt, aber hier direkt angehängt,
-            // da diese Logik nur einmalig beim Start läuft.
+            showDialog(renderingDialog);
+            
         document.getElementById("gpuRenderButton").addEventListener("click", () => {
-                renderingDialog.style.display = 'none';
+                hideDialog(renderingDialog);
                 initShader();
+                displayRenderingWarning('GPU-Rendering aktiviert');
         });
         document.getElementById("softwareRenderButton").addEventListener("click", () => {
-                renderingDialog.style.display = 'none';
-                attemptSoftwareRendering(false); // Versuche Standard Software-Rendering
+                hideDialog(renderingDialog);
+                attemptSoftwareRendering(false);
             });
             document.getElementById("cpuRenderButton").addEventListener("click", () => {
-                 renderingDialog.style.display = 'none';
-                 attemptSoftwareRendering(true); // Versuche Software-Rendering (CPU)
+                hideDialog(renderingDialog);
+                attemptSoftwareRendering(true);
             });
 
             } else {
@@ -167,18 +167,19 @@ if (rendererInfo) {
          // Wenn Software-Rendering (GPU) erkannt oder keine Renderer-Info verfügbar,
          // starte den Shader sofort.
          initShader();
+         displayRenderingWarning('Software-Rendering aktiviert');
     }
 
 } else { // Wenn kein WebGL-Kontext erhalten wurde (weder WebGL2 noch WebGL1 mit high-performance)
     console.error('WebGL-Kontext konnte nicht initialisiert werden.');
     const errorDialog = document.getElementById('webgl-error-dialog');
     if (errorDialog) {
-        errorDialog.style.display = 'block';
+        showDialog(errorDialog);
         // Event Listener für den Fallback-Button
         const softwareFallbackButton = document.getElementById("softwareFallbackButton");
         if (softwareFallbackButton) {
              softwareFallbackButton.addEventListener("click", () => {
-                 errorDialog.style.display = 'none';
+                 hideDialog(errorDialog);
                  attemptSoftwareRendering(false); // Versuche Standard Software-Rendering als Fallback
              });
         } else {
@@ -241,7 +242,7 @@ function attemptSoftwareRendering(useCpuOptions) {
                  debugMode.stats.renderingMode = 'Software (CPU)';
                  debugMode.stats.gpuModel = rendererName; // Renderer Name ist das Software-Modell
                  console.log('Software-Rendering (CPU) erfolgreich aktiviert:', rendererName);
-                 displayRenderingWarning(`Software-Rendering (CPU) aktiviert\nRenderer: ${rendererName}`);
+                 displayRenderingWarning('Software-Rendering (CPU) aktiviert');
                  initShader();
                  } else {
                 console.warn(`Unerwünschter Renderer (${rendererName}) für CPU-Option erhalten.`);
@@ -252,12 +253,12 @@ function attemptSoftwareRendering(useCpuOptions) {
 
                  if (cpuFallbackGpuDialog && gpuRendererInfoElement) {
                       gpuRendererInfoElement.textContent = `Erkannter Renderer: ${rendererName}`; // Zeige den erhaltenen Renderer an
-                      cpuFallbackGpuDialog.style.display = 'block';
+                      showDialog(cpuFallbackGpuDialog);
                       // Event Listener für den Button im Dialog
                       const useGpuButton = document.getElementById('useGpuFromCpuFallbackButton');
                       if (useGpuButton) {
                            useGpuButton.onclick = () => { // Nutze onclick, um vorherige Listener zu überschreiben
-                               cpuFallbackGpuDialog.style.display = 'none';
+                               hideDialog(cpuFallbackGpuDialog);
                                gl = tempGl; // Setze den globalen gl-Kontext auf den erhaltenen GPU-Kontext
                                // Aktualisiere Debug-Statistiken für den Low-Power GPU Modus
                                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
@@ -288,14 +289,14 @@ function attemptSoftwareRendering(useCpuOptions) {
                  debugMode.stats.renderingMode = 'Software (GPU)'; // Oder einfach 'Software'
                  debugMode.stats.gpuModel = rendererName; // Renderer Name ist das Software-Modell
                  console.log('Software-Rendering erfolgreich aktiviert:', rendererName);
-                 displayRenderingWarning('Software-Rendering aktiviert\nDie Performance könnte eingeschränkt sein.');
+                 displayRenderingWarning('Software-Rendering aktiviert');
              } else {
                   // Wenn wir hier einen Hardware-Renderer mit low-power Optionen bekommen, notieren wir das
                   const hardwareRendererName = debugInfo ? tempGl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unbekannt'; // Holen wir den Namen erneut
                   debugMode.stats.renderingMode = 'GPU (Low Power)';
                   debugMode.stats.gpuModel = hardwareRendererName;
                   console.log('GPU (Low Power) Modus aktiviert:', hardwareRendererName);
-                  displayRenderingWarning('GPU (Low Power) Modus aktiviert\nDie Performance könnte eingeschränkt sein.');
+                  displayRenderingWarning('GPU (Low Power) Modus aktiviert');
              }
             initShader();
                  }
@@ -317,12 +318,12 @@ function displayErrorDialog(title, message) {
          if (errorMessageElement) {
             errorMessageElement.textContent = message;
          }
-        errorDialog.style.display = 'block';
+        showDialog(errorDialog);
          // Stelle sicher, dass andere Dialoge ausgeblendet sind
          const renderingDialog = document.getElementById('rendering-dialog');
-         if (renderingDialog) renderingDialog.style.display = 'none';
+         if (renderingDialog) hideDialog(renderingDialog);
          const cpuFallbackGpuDialog = document.getElementById('cpu-fallback-gpu-dialog');
-         if (cpuFallbackGpuDialog) cpuFallbackGpuDialog.style.display = 'none';
+         if (cpuFallbackGpuDialog) hideDialog(cpuFallbackGpuDialog);
     } else {
         console.error('Kritischer Fehler: WebGL-Fehler-Dialog HTML-Element nicht gefunden!', message);
         alert(`Fehler: ${title}\n${message}`); // Fallback mit einfachem Alert
@@ -331,15 +332,34 @@ function displayErrorDialog(title, message) {
 
 // Hilfsfunktion zur Anzeige der Rendering-Warnung
 function displayRenderingWarning(message) {
-    const warningElement = document.getElementById('rendering-warning');
-    const warningTextElement = document.getElementById('rendering-warning-text');
-
-    if (warningElement && warningTextElement) {
-        warningTextElement.textContent = message;
-        warningElement.style.display = 'block';
-        setTimeout(() => warningElement.style.display = 'none', 5000);
+    // Bestimme die passende Warnung basierend auf der Nachricht
+    let warningElement;
+    if (message.includes('GPU-Rendering aktiviert')) {
+        warningElement = document.getElementById('gpu-rendering-warning');
+    } else if (message.includes('Software-Rendering aktiviert') && !message.includes('CPU')) {
+        warningElement = document.getElementById('software-rendering-warning');
+    } else if (message.includes('Software-Rendering (CPU) aktiviert')) {
+        warningElement = document.getElementById('cpu-rendering-warning');
+    } else if (message.includes('GPU (Low Power) Modus aktiviert') && !message.includes('aus CPU-Fallback')) {
+        warningElement = document.getElementById('low-power-gpu-warning');
+    } else if (message.includes('GPU (Low Power) Modus aktiviert (aus CPU-Fallback)')) {
+        warningElement = document.getElementById('low-power-gpu-fallback-warning');
     } else {
-        console.warn('Rendering-Warnung HTML-Elemente nicht gefunden!', message);
+        // Fallback auf die generische Warnung für andere Nachrichten
+        warningElement = document.getElementById('rendering-warning');
+        const warningText = document.getElementById('rendering-warning-text');
+        if (warningText) {
+            warningText.textContent = message;
+        }
+    }
+
+    if (warningElement) {
+        showDialog(warningElement);
+        
+        // Automatisches Ausblenden nach 5 Sekunden
+        setTimeout(() => {
+            hideDialog(warningElement);
+        }, 5000);
     }
 }
 
@@ -410,7 +430,20 @@ const controlPanels = document.querySelectorAll(".control-panel");
 // UI Event Listeners
 menuButton.addEventListener("click", () => {
   const isMenuOpen = menuButton.classList.toggle("open");
-  panelButtons.forEach(button => button.style.display = isMenuOpen ? "flex" : "none");
+  
+  // Animiertes Ein- und Ausblenden der Panel-Buttons
+  panelButtons.forEach((button, index) => {
+    if (isMenuOpen) {
+      button.style.display = "flex";
+      button.classList.remove("hide");
+    } else {
+      button.classList.add("hide");
+      // Warte auf das Ende der Animation bevor der Button ausgeblendet wird
+      setTimeout(() => {
+        button.style.display = "none";
+      }, 300);
+    }
+  });
 
   if (!isMenuOpen) {
     controlPanels.forEach(panel => panel.classList.remove("active"));
@@ -425,9 +458,12 @@ panelButtons.forEach(button => {
 
     controlPanels.forEach(panel => {
       if (panel.id === targetPanelId) {
+        // Füge/entferne 'active' Klasse direkt vom PANEL
         panel.classList.toggle("active");
+
       } else {
-        panel.classList.remove("active");
+         // Entferne 'active' Klasse von allen anderen Panels
+         panel.classList.remove("active");
       }
     });
 
@@ -439,9 +475,9 @@ panelButtons.forEach(button => {
       }
     });
 
+     // Diese Logik zur Überprüfung ob Panels aktiv sind, kann bleiben oder angepasst werden, je nach Bedarf
      const anyPanelActive = Array.from(controlPanels).some(panel => panel.classList.contains("active"));
-     if (!anyPanelActive) {
-     }
+     // Füge hier ggf. Logik hinzu, wenn alle Panels geschlossen sind.
   });
 });
 
@@ -823,8 +859,18 @@ function initShader() {
 
 // Initialisiere die Shader
 shaders = {
-    standard: initRadialShader(gl, vertexShader),
-    gemischt: initLinearShader(gl, vertexShader)
+    default: initDefaultShader(gl, vertexShader),
+    swirl: initSwirlShader(gl, vertexShader),
+    turbulent: initTurbulentShader(gl, vertexShader),
+    wavy: initWavyShader(gl, vertexShader),
+    fractal: initFractalShader(gl, vertexShader),
+    radial: initRadialShader(gl, vertexShader),
+    grid: initGridShader(gl, vertexShader),
+    cellular: initCellularShader(gl, vertexShader),
+    mixed: initMixedShader(gl, vertexShader),
+    wavegrid: initWaveGridShader(gl, vertexShader),
+    spiral: initSpiralShader(gl, vertexShader),
+    pulse: initPulseShader(gl, vertexShader)
 };
 
 // Überprüfe, ob alle Shader erfolgreich initialisiert wurden
@@ -859,7 +905,7 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
 ]), gl.STATIC_DRAW);
 
 // Aktuell aktives Shader-Programm und Uniforms
-  currentShader = shaders.standard;
+  currentShader = shaders.default;
 currentUniforms = getUniformLocations(gl, currentShader.program);
 
   // Überprüfe, ob das Shader-Programm und die Uniforms gültig sind, bevor wir sie verwenden
@@ -919,7 +965,7 @@ function getUniformLocations(gl, program) {
 shaderTypeButtons.forEach(button => {
   button.addEventListener('click', () => {
     const shaderType = button.getAttribute('data-type');
-    if (shaderType && (shaderType === 'standard' || shaderType === 'gemischt')) {
+    if (shaderType && shaders[shaderType]) {
       // Entferne 'active' Klasse von allen Buttons
       shaderTypeButtons.forEach(btn => btn.classList.remove('active'));
       // Füge 'active' Klasse zum geklickten Button hinzu
@@ -1273,7 +1319,7 @@ function initEventListeners() {
   shaderTypeButtons.forEach(button => {
     button.addEventListener('click', () => {
       const shaderType = button.getAttribute('data-type');
-      if (shaderType && (shaderType === 'standard' || shaderType === 'gemischt')) {
+      if (shaderType && shaders[shaderType]) {
         // Entferne 'active' Klasse von allen Buttons
         shaderTypeButtons.forEach(btn => btn.classList.remove('active'));
         // Füge 'active' Klasse zum geklickten Button hinzu
@@ -1679,3 +1725,21 @@ function updateDebugInfo(currentTime) {
 
 // Initialisiere Shader und Event-Listener beim Laden des DOM
 document.addEventListener('DOMContentLoaded', initShader); 
+
+// Funktion zum animierten Einblenden eines Dialogs
+function showDialog(dialogElement) {
+    if (!dialogElement) return;
+    dialogElement.style.display = 'block';
+    dialogElement.classList.remove('hide');
+}
+
+// Funktion zum animierten Ausblenden eines Dialogs
+function hideDialog(dialogElement) {
+    if (!dialogElement) return;
+    dialogElement.classList.add('hide');
+    // Warte auf das Ende der Animation
+    setTimeout(() => {
+        dialogElement.style.display = 'none';
+        dialogElement.classList.remove('hide');
+    }, 300); // 300ms entspricht der Animationsdauer
+}

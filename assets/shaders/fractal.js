@@ -1,5 +1,5 @@
-// GLSL Shader Code (Radial Fragment)
-const radialFragmentShaderSource = `
+// GLSL Shader Code (Fractal Fragment)
+const fractalFragmentShaderSource = `
 precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
@@ -20,22 +20,24 @@ vec4 effect(vec2 screenSize, vec2 screen_coords) {
     vec2 uv = (floor(screen_coords.xy*(1./pixel_size))*pixel_size - 0.5*screenSize.xy)/length(screenSize.xy);
     float uv_len = length(uv);
     
-    // Radial distortion with jitter
-    float angle = atan(uv.y, uv.x);
-    float radius = length(uv);
-    float jitter = sin(angle * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
-    radius += jitter;
-    uv = vec2(cos(angle), sin(angle)) * radius;
+    // Iterative fractal-like distortion
+    vec2 originalUV = uv;
+    for (int i = 0; i < 7; i++) {
+        uv += 0.1 * vec2(sin(uv.y * 10.0 + iTime * uSpinSpeed * 0.2 + float(i)),
+                         cos(uv.x * 10.0 + iTime * uSpinSpeed * 0.2 + float(i)));
+        uv *= 1.1;
+    }
+    uv = mix(uv, originalUV, 0.5);
     
     // Compute noise loop
     vec2 uv_loop = uv * 30.0;
-    float speed = iTime * uSpinSpeed * 0.7;
-    vec2 uv2 = vec2(uv_loop.x + uv_loop.y);
+    float speed = iTime * uSpinSpeed * 3.0;
+    vec2 uv_loop2 = vec2(uv_loop.x + uv_loop.y);
     for (int i = 0; i < 5; i++) {
-        uv2 += sin(max(uv_loop.x, uv_loop.y)) + uv_loop;
+        uv_loop2 += sin(max(uv_loop.x, uv_loop.y)) + uv_loop;
         uv_loop += 0.5 * vec2(
-            cos(5.1123314 + 0.353 * uv2.y + speed * 0.131121),
-            sin(uv2.x - 0.113 * speed)
+            cos(5.1123314 + 0.353 * uv_loop2.y + speed * 0.131121),
+            sin(uv_loop2.x - 0.113 * speed)
         );
         uv_loop -= cos(uv_loop.x + uv_loop.y) - sin(uv_loop.x * 0.711 - uv_loop.y);
     }
@@ -73,11 +75,11 @@ void main() {
 }
 `;
 
-// Funktion zur Initialisierung des Radial Shaders
-function initRadialShader(gl, vertexShader) {
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, radialFragmentShaderSource);
+// Funktion zur Initialisierung des Fractal Shaders
+function initFractalShader(gl, vertexShader) {
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fractalFragmentShaderSource);
     if (fragmentShader) {
-        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'radial');
+        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'fractal');
         return { program, uniforms };
     }
     return { program: null, uniforms: null };

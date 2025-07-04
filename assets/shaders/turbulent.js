@@ -1,5 +1,5 @@
-// GLSL Shader Code (Radial Fragment)
-const radialFragmentShaderSource = `
+// GLSL Shader Code (Turbulent Fragment)
+const turbulentFragmentShaderSource = `
 precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
@@ -20,12 +20,12 @@ vec4 effect(vec2 screenSize, vec2 screen_coords) {
     vec2 uv = (floor(screen_coords.xy*(1./pixel_size))*pixel_size - 0.5*screenSize.xy)/length(screenSize.xy);
     float uv_len = length(uv);
     
-    // Radial distortion with jitter
-    float angle = atan(uv.y, uv.x);
-    float radius = length(uv);
-    float jitter = sin(angle * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
-    radius += jitter;
-    uv = vec2(cos(angle), sin(angle)) * radius;
+    // Turbulent swirl with added high-frequency sine distortions
+    float angle = iTime * uSpinSpeed * 0.1 + uv_len * 5.0;
+    uv = vec2(uv.x * cos(angle) - uv.y * sin(angle),
+              uv.x * sin(angle) + uv.y * cos(angle));
+    uv += 0.1 * vec2(sin(uv.y * 15.0 + iTime * uSpinSpeed * 0.1),
+                     cos(uv.x * 15.0 + iTime * uSpinSpeed * 0.1));
     
     // Compute noise loop
     vec2 uv_loop = uv * 30.0;
@@ -73,11 +73,11 @@ void main() {
 }
 `;
 
-// Funktion zur Initialisierung des Radial Shaders
-function initRadialShader(gl, vertexShader) {
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, radialFragmentShaderSource);
+// Funktion zur Initialisierung des Turbulent Shaders
+function initTurbulentShader(gl, vertexShader) {
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, turbulentFragmentShaderSource);
     if (fragmentShader) {
-        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'radial');
+        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'turbulent');
         return { program, uniforms };
     }
     return { program: null, uniforms: null };

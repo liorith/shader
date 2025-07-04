@@ -1,5 +1,5 @@
-// GLSL Shader Code (Linear Fragment)
-const linearFragmentShaderSource = `
+// GLSL Shader Code (Mixed Fragment)
+const mixedFragmentShaderSource = `
 precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
@@ -126,28 +126,12 @@ void main() {
 }
 `;
 
-// Funktion zur Initialisierung des linearen Shaders
-function initLinearShader(gl, vertexShader) {
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, linearFragmentShaderSource);
+// Funktion zur Initialisierung des Mixed Shaders
+function initMixedShader(gl, vertexShader) {
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, mixedFragmentShaderSource);
     if (fragmentShader) {
-        const program = createProgram(gl, vertexShader, fragmentShader);
-        if (program) {
-            const uniforms = {
-                iResolution: gl.getUniformLocation(program, "iResolution"),
-                iTime: gl.getUniformLocation(program, "iTime"),
-                uSpinSpeed: gl.getUniformLocation(program, "uSpinSpeed"),
-                uPixelFilter: gl.getUniformLocation(program, "uPixelFilter"),
-                uColour1: gl.getUniformLocation(program, "uColour1"),
-                uColour2: gl.getUniformLocation(program, "uColour2"),
-                uColour3: gl.getUniformLocation(program, "uColour3"),
-                uQuality: gl.getUniformLocation(program, "uQuality"),
-                uContrast: gl.getUniformLocation(program, "uContrast"),
-                uInvertColors: gl.getUniformLocation(program, "uInvertColors"),
-                uBrightness: gl.getUniformLocation(program, "uBrightness"),
-                uSaturation: gl.getUniformLocation(program, "uSaturation")
-            };
-            return { program, uniforms };
-        }
+        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'mixed');
+        return { program, uniforms };
     }
     return { program: null, uniforms: null };
 } 

@@ -4,7 +4,8 @@
   right: 20px;
   width: 44px;
   height: 44px;
-  background: var(--bg-color);
+  background: var(--menu-bg);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -13,13 +14,11 @@
   z-index: 100;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .menu-button:hover {
-  background: var(--bg-color);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  background: var(--menu-bg);
+  transform: translateY(0px);
 }
 
 .menu-icon {
@@ -60,19 +59,20 @@
   transform: rotate(-135deg);
 }
 
-/* Neue Stile für Panel Buttons */
+/* Panel Buttons */
 .panel-buttons {
   position: fixed;
   top: 20px;
   right: 90px;
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  z-index: 100;
+  z-index: 1500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .panel-button {
-  background: var(--bg-color);
+  background: var(--menu-bg);
   border: 1px solid var(--border-color);
   color: var(--text-color);
   padding: 10px 14px;
@@ -82,18 +82,130 @@
   font-size: 13px;
   font-weight: 500;
   text-align: center;
-  backdrop-filter: blur(20px); /* Füge Blur hinzu */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateX(20px);
+  animation: slideInButtonHorizontal 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Verzögerung für jeden Button - jetzt von rechts nach links */
+.panel-button:nth-child(4) { animation-delay: 0.1s; }
+.panel-button:nth-child(3) { animation-delay: 0.2s; }
+.panel-button:nth-child(2) { animation-delay: 0.3s; }
+.panel-button:nth-child(1) { animation-delay: 0.4s; }
+
+@keyframes slideInButtonHorizontal {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-button.hide {
+  animation: slideOutButtonHorizontal 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideOutButtonHorizontal {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }
 
 .panel-button:hover {
-  background: var(--bg-color);
+  background: var(--menu-bg);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .panel-button.active {
-  background: var(--bg-color);
+  background: var(--menu-bg);
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
-} 
+}
+
+/* Mobile Styles für Panel Buttons */
+@media (max-width: 768px) {
+  .panel-buttons {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transform: none;
+    flex-direction: row;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .panel-button {
+    animation: none;
+    transform: translateY(100%);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    margin: 0 5px;
+    padding: 12px 8px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    color: white;
+    backdrop-filter: none;
+  }
+
+  .panel-button:not(.hide) {
+    animation: slideInButtonVertical 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .panel-button.hide {
+    animation: slideOutButtonVertical 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform: translateY(100%);
+  }
+
+  @keyframes slideInButtonVertical {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideOutButtonVertical {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+  }
+
+  .panel-button:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .panel-button.active {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+  }
+}
+
+/* Rest der bestehenden Styles bleiben unverändert */ 

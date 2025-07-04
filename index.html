@@ -18,9 +18,12 @@
   <meta property="og:site_name" content="liorith.com/shader">
 
   <!-- CSS-Dateien -->
+  <link rel="stylesheet" href="assets/css/variables.css">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/render.css">
   <link rel="stylesheet" href="assets/css/controls.css">
+  <link rel="stylesheet" href="assets/css/ui.css">
   <link rel="stylesheet" href="assets/css/tooltip.css">
   <link rel="stylesheet" href="assets/css/debug.css">
 </head>
@@ -36,13 +39,13 @@
       <p>Möchten Sie GPU-Rendering verwenden oder zu Software-Rendering wechseln?</p>
       <div class="rendering-buttons">
         <button id="gpuRenderButton" class="rendering-button gpu-button">
-          GPU Rendern
+          GPU Rendering nutzen
         </button>
         <button id="softwareRenderButton" class="rendering-button software-button">
           Software-Rendering nutzen
         </button>
         <button id="cpuRenderButton" class="rendering-button cpu-button">
-          Software-Rendering (CPU) nutzen
+          Software-Rendering per CPU nutzen
         </button>
       </div>
     </div>
@@ -57,27 +60,51 @@
       <ul>
         <li>Einen anderen Browser verwenden</li>
         <li>WebGL in Ihrem Browser aktivieren</li>
+        <li>Grafikbeschleunigung im Browser aktivieren</li>
         <li>Ihre Grafikkartentreiber aktualisieren</li>
       </ul>
-      <button id="softwareFallbackButton" class="fallback-button">
-        Mit Software-Rendering fortfahren
+      <button id="softwareFallbackButton" class="rendering-button software-button">
+        Mit Software-Rendering (CPU Rendering) fortfahren
       </button>
     </div>
   </div>
 
-  <!-- Rendering Warnung -->
+  <!-- Rendering Warnungen -->
   <div id="rendering-warning" class="rendering-warning" style="display: none;">
     <p id="rendering-warning-text"></p>
+  </div>
+
+  <div id="gpu-rendering-warning" class="rendering-warning green" style="display: none;">
+    <p>GPU-Rendering aktiviert</p>
+  </div>
+
+  <div id="software-rendering-warning" class="rendering-warning green" style="display: none;">
+    <p>Software-Rendering aktiviert</p>
+  </div>
+
+  <div id="cpu-rendering-warning" class="rendering-warning red" style="display: none;">
+    <p>Software-Rendering (CPU) aktiviert</p>
+  </div>
+
+  <div id="low-power-gpu-warning" class="rendering-warning yellow" style="display: none;">
+    <p>GPU (Low Power) Modus aktiviert</p>
+    <p>Die Performance könnte Eingeschränkt sein</p>
+  </div>
+
+  <div id="low-power-gpu-fallback-warning" class="rendering-warning yellow" style="display: none;">
+    <p>GPU (Low Power) Modus aktiviert (aus CPU-Fallback)</p>
+    <p>Die Performance könnte Eingeschränkt sein</p>
   </div>
 
   <!-- CPU Fallback GPU Dialog -->
   <div id="cpu-fallback-gpu-dialog" class="error-dialog" style="display: none;">
     <div class="error-dialog-content">
-      <h2>Software (CPU) Rendering fehlgeschlagen</h2>
+      <h2>Software Rendering per CPU fehlgeschlagen</h2>
       <p>Es konnte kein reines Software-Rendering über die CPU initialisiert werden.</p>
+      <p>Um CPU seitiges Rendern zu erzwingen hilft es meist, die Grafikbeschleunigung im Browser zu deaktivieren.</p>
       <p id="cpu-fallback-gpu-renderer-info"></p>
       <p>Möchten Sie stattdessen den verfügbaren GPU-Kontext verwenden?</p>
-      <button id="useGpuFromCpuFallbackButton" class="fallback-button">
+      <button id="useGpuFromCpuFallbackButton" class="rendering-button software-button">
         GPU-Rendering nutzen
       </button>
     </div>
@@ -164,14 +191,7 @@
     <!-- Shader Panel -->
     <div class="control-panel" id="shaderPanel" data-panel="shader">
       <div class="control-group">
-        <h3>
-          <svg class="performance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12" y2="8"></line>
-          </svg>
-          Shader
-        </h3>
+        <h3>Shader</h3>
         <div class="performance-toggle" data-tooltip="Schaltet den Shader-Effekt ein oder aus, um Ressourcen zu sparen.">
           <label for="performanceToggle">Shader aktivieren</label>
           <label class="toggle-switch">
@@ -216,8 +236,22 @@
       <div class="control-group">
         <h3>Shader Typ</h3>
         <div class="shader-type-selector">
-          <button class="type-button large-button active" data-type="standard" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Standard</button>
-          <button class="type-button large-button" data-type="gemischt" data-tooltip="Horizontaler Farbverlauf">Gemischt</button>
+          <button class="type-button large-button active" data-type="default" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Standard</button>
+          <button class="type-button large-button" data-type="mixed" data-tooltip="Gemischter Farbverlauf">Mixed</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="shader-type-selector">
+          <button class="type-button large-button" data-type="swirl" data-tooltip="Wirbelnder Farbverlauf">Swirl</button>
+          <button class="type-button large-button" data-type="turbulent" data-tooltip="Turbulenter Farbverlauf mit hoher Frequenz">Turbulent</button>
+          <button class="type-button large-button" data-type="wavy" data-tooltip="Wellenförmiger Farbverlauf">Wavy</button>
+          <button class="type-button large-button" data-type="fractal" data-tooltip="Fraktalartiger Farbverlauf">Fractal</button>
+          <button class="type-button large-button" data-type="radial" data-tooltip="Radialer Farbverlauf mit Jitter">Radial</button>
+          <button class="type-button large-button" data-type="grid" data-tooltip="Gitterartiger Farbverlauf">Grid</button>
+          <button class="type-button large-button" data-type="cellular" data-tooltip="Zellularer Farbverlauf">Cellular</button>
+          <button class="type-button large-button" data-type="wavegrid" data-tooltip="Kombinierter Gitter- und Welleneffekt">WaveGrid</button>
+          <button class="type-button large-button" data-type="spiral" data-tooltip="Mehrere ineinander verschlungene Spiralen">Spiral</button>
+          <button class="type-button large-button" data-type="pulse" data-tooltip="Rhythmische Pulseffekte">Pulse</button>
         </div>
       </div>
     </div>
@@ -280,18 +314,18 @@
           </div>
           <div class="resolution-buttons">
             <button class="resolution-button active" data-resolution="auto" data-tooltip="Passt sich automatisch an Ihre Bildschirmgröße an - die moderne Art der Auflösungsanpassung!">Automatisch</button>
-            <button class="resolution-button" data-resolution="sd" data-tooltip="854x480 - Die klassische SD-Auflösung aus den 90ern. Perfekt für nostalgische Vibes!">SD</button>
-            <button class="resolution-button" data-resolution="hd" data-tooltip="1280x720 - HD, die Revolution der 2000er! Als YouTube noch jung war...">HD</button>
-            <button class="resolution-button" data-resolution="fullhd" data-tooltip="1920x1080 - Full HD, der Standard der 2010er. Als Blu-ray noch cool war!">Full HD</button>
-            <button class="resolution-button" data-resolution="2k" data-tooltip="2560x1440 - 2K, die Sweet-Spot-Auflösung für Gamer. Als 144Hz Monitore populär wurden!">2K</button>
-            <button class="resolution-button" data-resolution="3k" data-tooltip="3200x1800 - 3K, die exotische Auflösung. Als Apple noch Retina-Displays revolutionierte!">3K</button>
-            <button class="resolution-button" data-resolution="4k" data-tooltip="3840x2160 - 4K, die moderne Premium-Auflösung. Als Netflix 4K-Streaming einführte!">4K</button>
-            <button class="resolution-button" data-resolution="8k" data-tooltip="7680x4320 - 8K, die Zukunft! Als Grafikkarten noch bezahlbar waren...">8K</button>
+            <button class="resolution-button" data-resolution="sd" data-tooltip="854x480 - Die klassische SD-Auflösung aus den 90ern. Perfekt für nostalgische Vibes!">SD (480p)</button>
+            <button class="resolution-button" data-resolution="hd" data-tooltip="1280x720 - HD, die Revolution der 2000er! Als YouTube noch jung war...">HD (720p)</button>
+            <button class="resolution-button" data-resolution="fullhd" data-tooltip="1920x1080 - Full HD, der Standard der 2010er. Als Blu-ray noch cool war!">Full HD (1080p)</button>
+            <button class="resolution-button" data-resolution="2k" data-tooltip="2560x1440 - 2K, die Sweet-Spot-Auflösung für Gamer. Als 144Hz Monitore populär wurden!">2K (1440p)</button>
+            <button class="resolution-button" data-resolution="3k" data-tooltip="3200x1800 - 3K, die exotische Auflösung. Als Apple noch Retina-Displays revolutionierte!">3K (1800p)</button>
+            <button class="resolution-button" data-resolution="4k" data-tooltip="3840x2160 - 4K, die moderne Premium-Auflösung. Als Netflix 4K-Streaming einführte!">4K (2160p)</button>
+            <button class="resolution-button" data-resolution="8k" data-tooltip="7680x4320 - 8K, die Zukunft! Als Grafikkarten noch bezahlbar waren...">8K (4320p)</button>
           </div>
         </div>
         <div class="slider-container">
           <div class="slider-label-row">
-            <label for="qualitySlider" data-tooltip="Passt die Detailtiefe und Komplexität des Shader-Effekts an.">Qualität</label>
+            <label for="qualitySlider" data-tooltip="Passt die Detailtiefe und Komplexität des Shader-Effekts an.">Qualität (nur bei Standartshader)</label>
             <div class="value-display" id="qualityValue">100</div>
           </div>
           <div class="slider-input-group">
@@ -389,9 +423,18 @@
   </div>
 
   <script src="assets/colors.js"></script>
+  <script src="assets/shaders/default.js"></script>
+  <script src="assets/shaders/mixed.js"></script>
+  <script src="assets/shaders/swirl.js"></script>
+  <script src="assets/shaders/turbulent.js"></script>
+  <script src="assets/shaders/wavy.js"></script>
+  <script src="assets/shaders/fractal.js"></script>
   <script src="assets/shaders/radial.js"></script>
-  <script src="assets/shaders/linear.js"></script>
-  <script src="assets/shaders/waves.js"></script>
+  <script src="assets/shaders/grid.js"></script>
+  <script src="assets/shaders/cellular.js"></script>
+  <script src="assets/shaders/wavegrid.js"></script>
+  <script src="assets/shaders/spiral.js"></script>
+  <script src="assets/shaders/pulse.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html> 

@@ -1,5 +1,5 @@
-// GLSL Shader Code (Radial Fragment)
-const radialFragmentShaderSource = `
+// GLSL Shader Code (Pulse Fragment)
+const pulseFragmentShaderSource = `
 precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
@@ -14,28 +14,46 @@ uniform float uInvertColors;
 uniform float uBrightness;
 uniform float uSaturation;
 
+#define PI 3.14159265359
+
 vec4 effect(vec2 screenSize, vec2 screen_coords) {
     // Standard uv computation
     float pixel_size = length(screenSize.xy) / uPixelFilter;
     vec2 uv = (floor(screen_coords.xy*(1./pixel_size))*pixel_size - 0.5*screenSize.xy)/length(screenSize.xy);
     float uv_len = length(uv);
     
-    // Radial distortion with jitter
+    // Rhythmische Pulseffekte
+    float pulse1 = sin(iTime * uSpinSpeed * 0.5) * 0.5 + 0.5;
+    float pulse2 = sin(iTime * uSpinSpeed * 0.3 + PI * 0.5) * 0.5 + 0.5;
+    float pulse3 = sin(iTime * uSpinSpeed * 0.7 + PI) * 0.5 + 0.5;
+    
+    // Kombiniere Pulse mit UV-Koordinaten
     float angle = atan(uv.y, uv.x);
     float radius = length(uv);
-    float jitter = sin(angle * 10.0 + iTime * uSpinSpeed * 0.1) * 0.1;
-    radius += jitter;
+    
+    // Erste Pulse-Welle
+    float wave1 = sin(angle * 8.0 + iTime * uSpinSpeed * 0.2) * pulse1;
+    // Zweite Pulse-Welle
+    float wave2 = cos(angle * 12.0 + iTime * uSpinSpeed * 0.3) * pulse2;
+    // Dritte Pulse-Welle
+    float wave3 = sin(angle * 16.0 + iTime * uSpinSpeed * 0.4) * pulse3;
+    
+    // Kombiniere die Wellen
+    float combined_wave = (wave1 + wave2 + wave3) * 0.1;
+    radius += combined_wave;
+    
+    // Erstelle neue UV-Koordinaten
     uv = vec2(cos(angle), sin(angle)) * radius;
     
     // Compute noise loop
     vec2 uv_loop = uv * 30.0;
-    float speed = iTime * uSpinSpeed * 0.7;
-    vec2 uv2 = vec2(uv_loop.x + uv_loop.y);
+    float speed = iTime * uSpinSpeed * 2.0;
+    vec2 uv2_loop = vec2(uv_loop.x + uv_loop.y);
     for (int i = 0; i < 5; i++) {
-        uv2 += sin(max(uv_loop.x, uv_loop.y)) + uv_loop;
+        uv2_loop += sin(max(uv_loop.x, uv_loop.y)) + uv_loop;
         uv_loop += 0.5 * vec2(
-            cos(5.1123314 + 0.353 * uv2.y + speed * 0.131121),
-            sin(uv2.x - 0.113 * speed)
+            cos(5.1123314 + 0.353 * uv2_loop.y + speed * 0.131121),
+            sin(uv2_loop.x - 0.113 * speed)
         );
         uv_loop -= cos(uv_loop.x + uv_loop.y) - sin(uv_loop.x * 0.711 - uv_loop.y);
     }
@@ -73,11 +91,11 @@ void main() {
 }
 `;
 
-// Funktion zur Initialisierung des Radial Shaders
-function initRadialShader(gl, vertexShader) {
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, radialFragmentShaderSource);
+// Funktion zur Initialisierung des Pulse Shaders
+function initPulseShader(gl, vertexShader) {
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, pulseFragmentShaderSource);
     if (fragmentShader) {
-        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'radial');
+        const { program, uniforms } = setupShaderProgram(gl, vertexShader, fragmentShader, 'pulse');
         return { program, uniforms };
     }
     return { program: null, uniforms: null };

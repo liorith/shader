@@ -1,0 +1,207 @@
+/* Rendering Dialog Styles */
+.rendering-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--menu-bg);
+    backdrop-filter: blur(10px);
+    color: var(--text-color);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+    max-width: 90%;
+    width: 400px;
+    opacity: 0;
+    animation: dialogFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes dialogFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.rendering-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rendering-dialog h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+}
+
+.rendering-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.rendering-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.gpu-button {
+    background: var(--green);
+    color: var(--text-color);
+}
+
+.software-button {
+    background: var(--yellow);
+    color: var(--text-color);
+}
+
+.cpu-button {
+    background: var(--red);
+    color: var(--text-color);
+}
+
+.gpu-button:hover {
+    background: var(--green-hover);
+    color: var(--text-color);
+}
+
+.software-button:hover {
+    background: var(--yellow-hover);
+    color: var(--text-color);
+}
+
+.cpu-button:hover {
+    background: var(--red-hover);
+    color: var(--text-color);
+}
+
+/* Error Dialog Styles */
+.error-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    color: var(--text-color);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+    max-width: 90%;
+    width: 400px;
+    opacity: 0;
+    animation: errorDialogFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes errorDialogFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.error-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.error-dialog h2 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+}
+
+.error-dialog ul {
+    text-align: left;
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.error-dialog li {
+    margin: 0.5rem 0;
+}
+
+/* Rendering Warning Styles */
+.rendering-warning {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    backdrop-filter: blur(10px);
+    color: var(--text-color);
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    z-index: 1000;
+    max-width: 300px;
+    opacity: 0;
+    animation: warningSlideIn 0.3s ease-out forwards;
+}
+
+.green {
+    background: var(--green);
+}
+
+.red {
+    background: var(--red);
+}
+
+.yellow {
+    background: var(--yellow);
+}
+
+@keyframes warningSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dialog Exit Animations */
+.rendering-dialog.hide,
+.error-dialog.hide,
+.rendering-warning.hide {
+    animation: dialogFadeOut 0.3s ease-in forwards;
+}
+
+@keyframes dialogFadeOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+} 
+
+.rendering-warning.hide {
+    animation: warningFadeOut 0.3s ease-in forwards;
+}
+
+@keyframes warningFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+} 

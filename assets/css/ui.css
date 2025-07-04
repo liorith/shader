@@ -1,0 +1,368 @@
+/*********************************
+*********** Slider *******
+*********************************/
+
+.slider-container {
+    margin-bottom: 0.5rem;
+  }
+  
+  .slider-container:last-child {
+    margin-bottom: 0;
+  }
+  
+  .slider-container label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--text-color);
+    opacity: 0.9;
+  }
+  
+  .slider-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  
+  .slider-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  
+  .slider-input-group input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--slider-bg);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  
+  .slider-input-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--slider-thumb);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .slider-input-group input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .slider-input-group input[type="number"] {
+    width: 70px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 13px;
+    transition: all 0.2s ease;
+  }
+  
+  .slider-input-group input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+  }
+  
+  .value-display {
+    font-size: 12px;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
+    min-width: 40px;
+  }
+  
+  
+  /*********************************
+  *********** Preset Buttons *******
+  *********************************/
+  
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  
+  .preset-button {
+    background: var(--button-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .preset-button:hover {
+    background: var(--hover-bg);
+    transform: translateY(0px);
+  }
+  
+  .preset-button.active {
+    background: var(--active-bg);
+    border-color: var(--accent-color);
+  }
+  
+  
+  /*********************************
+  *********** Toggle Buttons *******
+  *********************************/
+  
+  .performance-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: var(--input-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  
+  .performance-toggle label {
+    font-size: 13px;
+    color: var(--text-color);
+  }
+  
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--slider-bg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+  }
+  
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--slider-thumb);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+  }
+  
+  input:checked + .toggle-slider {
+    background-color: var(--toggle-bg);
+  }
+  
+  input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+  }
+  
+  
+  /*********************************
+  *********** Custom Color *******
+  *********************************/
+  
+  .custom-color-section {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .custom-color-section h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.9;
+  }
+  
+  .color-picker-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  
+  .color-picker-group label {
+    font-size: 13px;
+    color: var(--text-color);
+    opacity: 0.8;
+  }
+  
+  .color-picker-group input[type="color"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  
+  .color-picker-group input[type="color"]::-webkit-color-swatch {
+    border-radius: 3px;
+    border: none;
+  }
+  
+  .color-picker-group input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  .color-picker-group input[type="color"]::-moz-color-swatch {
+    border-radius: 3px;
+    border: none;
+  }
+  
+  .color-picker-group input[type="color"]::-moz-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  
+  /*********************************
+  *********** Shader Type Buttons *******
+  *********************************/
+  
+  .shader-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  
+  .type-button {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .type-button.large-button {
+    padding: 10px 8px; /* Größerer Innenabstand */
+    font-size: 14px; /* Größere Schriftgröße */
+    margin-bottom: 8px; /* Abstand nach unten */
+  }
+  
+  .type-button:hover {
+    background: var(--hover-bg);
+    transform: translateY(0px);
+  }
+  
+  .type-button.active {
+    background: var(--active-bg);
+    border-color: var(--accent-color);
+  }
+  
+  
+  /*********************************
+  *********** Random Color Button *******
+  *********************************/
+  
+  .generate-random-button {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  
+  .generate-random-button:hover {
+    background: var(--hover-bg);
+    transform: translateY(0px);
+  }
+  
+  
+  /*********************************
+  *********** Reset Button *******
+  *********************************/
+  
+  .reset-button {
+    background: var(--red); /* Leichter roter Hintergrund */
+    border: 1px solid var(--red-hover); /* Roter Rahmen */
+    color: var(--text-color); /* Textfarbe beibehalten */
+    padding: 8px 12px; /* Etwas weniger Padding als Panel Buttons */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%; /* Volle Breite im Container */
+    margin-top: 8px; /* Abstand nach oben */
+  }
+  
+  .reset-button:hover {
+    background: var(--red-hover); /* Dunklerer roter Hintergrund beim Hover */
+  }
+  
+  /* Resolution Buttons */
+  .resolution-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .resolution-button {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    position: relative;
+  }
+  
+  .resolution-button:hover {
+    background: var(--hover-bg);
+    transform: translateY(0px);
+  }
+  
+  .resolution-button.active {
+    background: var(--active-bg);
+    border-color: var(--accent-color);
+  }
