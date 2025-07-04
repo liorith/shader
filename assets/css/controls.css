@@ -316,6 +316,12 @@ input:checked + .toggle-slider:before {
   text-align: center;
 }
 
+.type-button.large-button {
+  padding: 10px 8px; /* Größerer Innenabstand */
+  font-size: 14px; /* Größere Schriftgröße */
+  margin-bottom: 8px; /* Abstand nach unten */
+}
+
 .type-button:hover {
   background: var(--hover-bg);
   transform: translateY(-2px);
@@ -326,6 +332,28 @@ input:checked + .toggle-slider:before {
   background: var(--active-bg);
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+/* Stil für den Zufällig generieren Button */
+.generate-random-button {
+  background: var(--input-bg); /* Gleicher Hintergrund wie Input-Felder */
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px; /* Etwas mehr vertikaler Abstand als Preset-Buttons */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  width: 100%; /* Volle Breite im Container */
+  margin-bottom: 12px; /* Abstand nach unten zu den Farbwählern */
+}
+
+.generate-random-button:hover {
+  background: var(--hover-bg); /* Gleicher Hover-Effekt wie andere interaktive Elemente */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Stil für den Reset Button */
@@ -347,4 +375,46 @@ input:checked + .toggle-slider:before {
 .reset-button:hover {
   background: rgba(255, 0, 0, 0.2); /* Dunklerer roter Hintergrund beim Hover */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Resolution Buttons */
+.resolution-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.resolution-button {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  position: relative;
+}
+
+.resolution-button:hover {
+  background: var(--hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.resolution-button.active {
+  background: var(--active-bg);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+.resolution-button::before {
+  display: none;
+}
+
+.resolution-button:hover::before {
+  display: none;
 } 

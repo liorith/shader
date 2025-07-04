@@ -10,6 +10,9 @@ uniform vec4 uColour2;
 uniform vec4 uColour3;
 uniform float uQuality;
 uniform float uContrast;
+uniform float uInvertColors;
+uniform float uBrightness;
+uniform float uSaturation;
 
 #define SPIN_ROTATION -2.0
 #define OFFSET vec2(0.0)
@@ -38,27 +41,53 @@ vec4 effect(vec2 screenSize, vec2 screen_coords) {
 
     // Skaliere Effekte basierend auf Qualität innerhalb fester Iterationen
     float qualityFactor = uQuality / 100.0; // Normiert uQuality von 1-100 auf 0.01-1.0
-    qualityFactor = max(0.01, qualityFactor); // Mindestens 1% Qualität
+    qualityFactor = clamp(qualityFactor, 0.01, 1.0); // Begrenze auf 1% bis 100% Qualität
 
     // Feste Anzahl von Schleifendurchgängen
-    for(int i=0; i < 4; i++) {
-        uv2 += qualityFactor * (sin(max(uv.x, uv.y)) + uv);
+    // Passe die Anzahl der Oktaven basierend auf Qualität an
+    float numOctaves = mix(1.0, 8.0, qualityFactor); // Anzahl der Oktaven basierend auf qualityFactor
+    numOctaves = floor(numOctaves); // Runde auf nächste ganze Zahl ab
+
+    // Feste Anzahl von Iterationen
+    const int ITERATIONS = 4;
+    for(int i=0; i < ITERATIONS; i++) { // Die Schleife bleibt fest bei 4 Iterationen, die Qualität skaliert die Effekte innerhalb
+        float maxUV = uv.x > uv.y ? uv.x : uv.y;
+        uv2 += qualityFactor * (sin(maxUV) + uv);
         uv  += qualityFactor * 0.5*vec2(cos(5.11 + 0.35*uv2.y + speed*0.13),sin(uv2.x - 0.11*speed));
         uv  -= qualityFactor * (cos(uv.x + uv.y) - sin(uv.x*0.71 - uv.y));
     }
 
     float contrast_mod = (0.25*3.5 + 0.5*SPIN_AMOUNT + 1.2) * uContrast;
-    float paint_res = min(2.0, max(0.0, length(uv)*0.035*contrast_mod));
-    float c1p = max(0.0, 1.0 - contrast_mod*abs(1.0-paint_res));
-    float c2p = max(0.0, 1.0 - contrast_mod*abs(paint_res));
-    float c3p = 1.0 - min(1.0, c1p + c2p);
-    float light = (LIGTHING - 0.2)*max(c1p*5.0 - 4.0, 0.0) + LIGTHING*max(c2p*5.0 - 4.0, 0.0);
-    return (0.3/3.5)*uColour1 + (1.0 - 0.3/3.5)*(uColour1*c1p + uColour2*c2p + vec4(c3p*uColour3.rgb, c3p*uColour1.a)) + light;
+    float paint_res = clamp(length(uv)*0.035*contrast_mod, 0.0, 2.0);
+    float c1p = clamp(1.0 - contrast_mod*abs(1.0-paint_res), 0.0, 1.0);
+    float c2p = clamp(1.0 - contrast_mod*abs(paint_res), 0.0, 1.0);
+    float c3p = 1.0 - clamp(c1p + c2p, 0.0, 1.0);
+    float light = (LIGTHING - 0.2)*clamp(c1p*5.0 - 4.0, 0.0, 1.0) + LIGTHING*clamp(c2p*5.0 - 4.0, 0.0, 1.0);
+    
+    vec4 finalColor = (0.3/3.5)*uColour1 + (1.0 - 0.3/3.5)*(uColour1*c1p + uColour2*c2p + vec4(c3p*uColour3.rgb, c3p*uColour1.a)) + light;
+
+    // Farben invertieren basierend auf uInvertColors
+    if (uInvertColors > 0.5) {
+        finalColor.rgb = 1.0 - finalColor.rgb;
+    }
+
+    return finalColor;
+}
+
+vec3 adjustSaturation(vec3 color, float saturation) {
+    vec3 grey = vec3(dot(color, vec3(0.2126, 0.7152, 0.0722)));
+    return mix(grey, color, saturation);
 }
 
 void main() {
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
-    gl_FragColor = effect(iResolution.xy, uv * iResolution.xy);
+    vec4 color = effect(iResolution.xy, uv * iResolution.xy);
+
+    // Helligkeit und Sättigung anwenden
+    color.rgb = color.rgb * uBrightness;
+    color.rgb = adjustSaturation(color.rgb, uSaturation);
+
+    gl_FragColor = color;
 }
 `;
 
@@ -102,6 +131,9 @@ function setupShaderProgram(gl, vertexShader, fragmentShader, type) {
       uColour3: gl.getUniformLocation(program, "uColour3"),
       uQuality: gl.getUniformLocation(program, "uQuality"),
       uContrast: gl.getUniformLocation(program, "uContrast"),
+      uInvertColors: gl.getUniformLocation(program, "uInvertColors"),
+      uBrightness: gl.getUniformLocation(program, "uBrightness"),
+      uSaturation: gl.getUniformLocation(program, "uSaturation"),
     };
     return { program, uniforms };
   }

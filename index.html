@@ -12,20 +12,129 @@
 
   <meta property="og:title" content="Project Shader | Liorith.com">
   <meta property="og:description" content="A simple Shader with much Effects ans Settings.">
-  <meta property="og:image" content="/assets/image.png">
+  <meta property="og:image" content="/icon/icon-1024.png">
   <meta property="og:url" content="https://liorith.com/shader">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="liorith.com/shader">
 
-  <!-- Neue CSS-Dateien -->
-  <link rel="stylesheet" href="assets/base.css">
-  <link rel="stylesheet" href="assets/menu.css">
-  <link rel="stylesheet" href="assets/controls.css">
-  <link rel="stylesheet" href="assets/tooltip.css">
+  <!-- CSS-Dateien -->
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
+  <link rel="stylesheet" href="assets/css/controls.css">
+  <link rel="stylesheet" href="assets/css/tooltip.css">
+  <link rel="stylesheet" href="assets/css/debug.css">
 </head>
 <body>
   <canvas id="shader-canvas"></canvas>
   
+  <!-- Rendering-Auswahl Dialog -->
+  <div id="rendering-dialog" class="rendering-dialog" style="display: none;">
+    <div class="rendering-dialog-content">
+      <h2>GPU erkannt</h2>
+      <p id="renderer-info">Renderer: <span id="renderer-name"></span></p>
+      <p id="vendor-info">Vendor: <span id="vendor-name"></span></p>
+      <p>Möchten Sie GPU-Rendering verwenden oder zu Software-Rendering wechseln?</p>
+      <div class="rendering-buttons">
+        <button id="gpuRenderButton" class="rendering-button gpu-button">
+          GPU Rendern
+        </button>
+        <button id="softwareRenderButton" class="rendering-button software-button">
+          Software-Rendering nutzen
+        </button>
+        <button id="cpuRenderButton" class="rendering-button cpu-button">
+          Software-Rendering (CPU) nutzen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WebGL Fehler Dialog -->
+  <div id="webgl-error-dialog" class="error-dialog" style="display: none;">
+    <div class="error-dialog-content">
+      <h2>WebGL wird nicht unterstützt</h2>
+      <p>Ihr Browser oder System unterstützt WebGL nicht oder es ist deaktiviert.</p>
+      <p>Sie können:</p>
+      <ul>
+        <li>Einen anderen Browser verwenden</li>
+        <li>WebGL in Ihrem Browser aktivieren</li>
+        <li>Ihre Grafikkartentreiber aktualisieren</li>
+      </ul>
+      <button id="softwareFallbackButton" class="fallback-button">
+        Mit Software-Rendering fortfahren
+      </button>
+    </div>
+  </div>
+
+  <!-- Rendering Warnung -->
+  <div id="rendering-warning" class="rendering-warning" style="display: none;">
+    <p id="rendering-warning-text"></p>
+  </div>
+
+  <!-- CPU Fallback GPU Dialog -->
+  <div id="cpu-fallback-gpu-dialog" class="error-dialog" style="display: none;">
+    <div class="error-dialog-content">
+      <h2>Software (CPU) Rendering fehlgeschlagen</h2>
+      <p>Es konnte kein reines Software-Rendering über die CPU initialisiert werden.</p>
+      <p id="cpu-fallback-gpu-renderer-info"></p>
+      <p>Möchten Sie stattdessen den verfügbaren GPU-Kontext verwenden?</p>
+      <button id="useGpuFromCpuFallbackButton" class="fallback-button">
+        GPU-Rendering nutzen
+      </button>
+    </div>
+  </div>
+
+  <!-- Debug-Menü -->
+  <div class="debug-menu" id="debug-menu">
+    <div class="panel-header">
+      <h3>Debug Info</h3>
+    </div>
+    <div class="panel-content">
+      <div class="debug-item">
+        <span class="debug-label">FPS</span>
+        <span class="debug-value" id="debug-fps">0</span>
+      </div>
+      <div class="debug-item">
+        <span class="debug-label">Frame Time</span>
+        <span class="debug-value" id="debug-frame-time">0 ms</span>
+      </div>
+      <div class="debug-item">
+        <span class="debug-label">Draw Calls</span>
+        <span class="debug-value" id="debug-draw-calls">0</span>
+      </div>
+      <div class="debug-item">
+        <span class="debug-label">Shader Type</span>
+        <span class="debug-value" id="debug-shader-type">-</span>
+      </div>
+      <div class="debug-item">
+        <span class="debug-label">Resolution</span>
+        <span class="debug-value" id="debug-resolution">0x0</span>
+      </div>
+
+      <!-- Neuer Bereich für detaillierte GPU Infos - KORREKT verschachtelt -->
+      <div id="debug-gpu-details" style="display: none;">
+         <div class="debug-section-title"> </div>
+          <div class="debug-item">
+            <span class="debug-label">Rendering</span>
+            <span class="debug-value" id="debug-rendering-mode">-</span>
+          </div>
+          <div class="debug-item">
+            <span class="debug-label">GPU Model</span>
+            <span class="debug-value" id="debug-gpu-model">-</span>
+          </div>
+           <div class="debug-item">
+             <span class="debug-label" data-tooltip="Geschätzte GPU-Render-Performance, falls Timer-Erweiterung verfügbar.">GPU Zeit (Durchschnitt)</span>
+             <span class="debug-value" id="debug-gpu-info">Messung läuft...</span>
+           </div>
+            <!-- Weitere detaillierte GPU-Metriken könnten hier hinzugefügt werden -->
+      </div> <!-- <-- Dieses Div schließt das debug-gpu-details korrekt -->
+
+      <div class="debug-section-title">Uniforms</div>
+      <div class="debug-uniforms-grid" id="debug-uniforms-list">
+        <!-- Uniforms werden hier vom JavaScript eingefügt -->
+      </div>
+    </div> <!-- <-- Dieses Div schließt das panel-content korrekt -->
+  </div>
+
   <div class="menu-button" id="menuButton">
     <div class="menu-icon">
       <span></span>
@@ -34,7 +143,7 @@
     </div>
   </div>
   
-  <!-- Neue Buttons für die Panels -->
+  <!-- Buttons für die Panels -->
   <div class="panel-buttons">
     <div class="panel-button" id="shaderPanelButton" data-panel="shader">
       Shader
@@ -44,6 +153,9 @@
     </div>
     <div class="panel-button" id="slidersPanelButton" data-panel="sliders">
       Slider
+    </div>
+    <div class="panel-button" id="effectsPanelButton" data-panel="effects">
+      Effekte
     </div>
   </div>
 
@@ -75,11 +187,37 @@
           </label>
         </div>
       </div>
+
+      <div class="control-group">
+        <h3>Debug-Info</h3>
+        <div class="performance-toggle" data-tooltip="Blendet die Debug Infos ein, welche FPS und andere nützliche Dinge anzeigen.">
+          <label for="debugToggle">Debug Info einblenden</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="debugToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="performance-toggle" data-tooltip="Blendet detaillierte Uniforms-Informationen im Debug-Menü ein.">
+          <label for="showUniformsToggle">Erweiterte Debug Infos anzeigen</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showUniformsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="performance-toggle" data-tooltip="Blendet detaillierte GPU-Informationen im Debug-Menü ein.">
+          <label for="showGpuDetailsToggle">GPU Details anzeigen</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showGpuDetailsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
       <div class="control-group">
         <h3>Shader Typ</h3>
         <div class="shader-type-selector">
-          <button class="type-button active" data-type="radial" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Radial</button>
-          <button class="type-button" data-type="linear" disabled title="Coming soon" data-tooltip="Horizontaler Farbverlauf (in Entwicklung)">Linear</button>
+          <button class="type-button large-button active" data-type="standard" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Standard</button>
+          <button class="type-button large-button" data-type="gemischt" data-tooltip="Horizontaler Farbverlauf">Gemischt</button>
         </div>
       </div>
     </div>
@@ -105,6 +243,7 @@
         </div>
         <div class="custom-color-section">
           <h4>Benutzerdefiniert</h4>
+          <button class="generate-random-button" id="generateRandomColorsButton" data-tooltip="Erzeugt eine zufällige Farbpalette.">Zufällig generieren</button>
           <div class="color-picker-group">
             <label for="customColor1" data-tooltip="Die Hauptfarbe des Shaders.">Primär:</label>
             <input type="color" id="customColor1" value="#de4441">
@@ -118,6 +257,14 @@
             <input type="color" id="customColor3" value="#191919">
           </div>
         </div>
+        <!-- Invert Colors Toggle -->
+        <div class="performance-toggle" data-tooltip="Invertiert die Farben des Shaders.">
+          <label for="invertToggle">Farben invertieren</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="invertToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -126,6 +273,22 @@
       <!-- Performance Controls -->
       <div class="control-group">
         <h3>Performance</h3>
+        <!-- Resolution Slider -->
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label data-tooltip="Wählt eine vordefinierte Renderauflösung oder automatisch (Fenstergröße).">Renderauflösung</label>
+          </div>
+          <div class="resolution-buttons">
+            <button class="resolution-button active" data-resolution="auto" data-tooltip="Passt sich automatisch an Ihre Bildschirmgröße an - die moderne Art der Auflösungsanpassung!">Automatisch</button>
+            <button class="resolution-button" data-resolution="sd" data-tooltip="854x480 - Die klassische SD-Auflösung aus den 90ern. Perfekt für nostalgische Vibes!">SD</button>
+            <button class="resolution-button" data-resolution="hd" data-tooltip="1280x720 - HD, die Revolution der 2000er! Als YouTube noch jung war...">HD</button>
+            <button class="resolution-button" data-resolution="fullhd" data-tooltip="1920x1080 - Full HD, der Standard der 2010er. Als Blu-ray noch cool war!">Full HD</button>
+            <button class="resolution-button" data-resolution="2k" data-tooltip="2560x1440 - 2K, die Sweet-Spot-Auflösung für Gamer. Als 144Hz Monitore populär wurden!">2K</button>
+            <button class="resolution-button" data-resolution="3k" data-tooltip="3200x1800 - 3K, die exotische Auflösung. Als Apple noch Retina-Displays revolutionierte!">3K</button>
+            <button class="resolution-button" data-resolution="4k" data-tooltip="3840x2160 - 4K, die moderne Premium-Auflösung. Als Netflix 4K-Streaming einführte!">4K</button>
+            <button class="resolution-button" data-resolution="8k" data-tooltip="7680x4320 - 8K, die Zukunft! Als Grafikkarten noch bezahlbar waren...">8K</button>
+          </div>
+        </div>
         <div class="slider-container">
           <div class="slider-label-row">
             <label for="qualitySlider" data-tooltip="Passt die Detailtiefe und Komplexität des Shader-Effekts an.">Qualität</label>
@@ -136,8 +299,29 @@
             <input type="number" id="qualityInput" min="1" max="100" value="100" step="1">
           </div>
         </div>
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="fpsSlider" data-tooltip="Legt die maximale Anzahl der Bilder pro Sekunde fest, die gerendert werden.">Framerate Begrenzung</label>
+            <div class="value-display" id="fpsValue">60</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="fpsSlider" min="0" max="360" value="60" step="1">
+            <input type="number" id="fpsInput" min="0" max="360" value="60" step="1">
+          </div>
+        </div>
+        <div class="performance-toggle" data-tooltip="Begrenzt die Framerate für eine bessere Performance.">
+          <label for="lowFPSToggle">Low FPS Modus</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lowFPSToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
-      <!-- Animation Controls -->
+    </div>
+
+    <!-- Neues Effekte Panel -->
+    <div class="control-panel" id="effectsPanel" data-panel="effects">
+      <!-- Animation Controls (Verschoben aus Slider Panel) -->
       <div class="control-group">
         <h3>Animation</h3>
         <div class="slider-container">
@@ -150,18 +334,8 @@
             <input type="number" id="speedInput" min="0" max="15" value="5.0" step="0.1">
           </div>
         </div>
-        <div class="slider-container">
-          <div class="slider-label-row">
-            <label for="fpsSlider" data-tooltip="Legt die maximale Anzahl der Bilder pro Sekunde fest, die gerendert werden.">Framerate</label>
-            <div class="value-display" id="fpsValue">60</div>
-          </div>
-          <div class="slider-input-group">
-            <input type="range" id="fpsSlider" min="0" max="120" value="60" step="1">
-            <input type="number" id="fpsInput" min="0" max="120" value="60" step="1">
-          </div>
-        </div>
       </div>
-      <!-- Effect Controls -->
+      <!-- Effect Controls (Verschoben aus Slider Panel) -->
       <div class="control-group">
         <h3>Effekte</h3>
         <div class="slider-container">
@@ -180,22 +354,44 @@
             <div class="value-display" id="contrastValue">1.0</div>
           </div>
           <div class="slider-input-group">
-            <input type="range" id="contrastSlider" min="0.5" max="2.0" value="1.0" step="0.1">
-            <input type="number" id="contrastInput" min="0.5" max="2.0" value="1.0" step="0.1">
+            <input type="range" id="contrastSlider" min="0.5" max="2.0" value="1.0" step="0.05">
+            <input type="number" id="contrastInput" min="0.5" max="2.0" value="1.0" step="0.05">
+          </div>
+        </div>
+        <!-- Brightness Slider -->
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="brightnessSlider" data-tooltip="Passt die Helligkeit des Shader-Effekts an.">Helligkeit</label>
+            <div class="value-display" id="brightnessValue">1.0</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="brightnessSlider" min="0.1" max="2.0" value="1.0" step="0.05">
+            <input type="number" id="brightnessInput" min="0.1" max="2.0" value="1.0" step="0.05">
+          </div>
+        </div>
+        <!-- Saturation Slider -->
+        <div class="slider-container">
+          <div class="slider-label-row">
+            <label for="saturationSlider" data-tooltip="Passt die Sättigung des Shader-Effekts an.">Sättigung</label>
+            <div class="value-display" id="saturationValue">1.0</div>
+          </div>
+          <div class="slider-input-group">
+            <input type="range" id="saturationSlider" min="0.0" max="2.0" value="1.0" step="0.05">
+            <input type="number" id="saturationInput" min="0.0" max="2.0" value="1.0" step="0.05">
           </div>
         </div>
       </div>
-      <!-- Settings Control Group -->
-      <div class="control-group">
-        <h3>Einstellungen</h3>
-        <button class="reset-button" id="resetSettingsButton">Standardeinstellungen wiederherstellen</button>
-      </div>
+       <div class="control-group">
+         <button class="reset-button" id="resetSettingsButton">Standardeinstellungen wiederherstellen</button>
+       </div>
     </div>
 
   </div>
 
   <script src="assets/colors.js"></script>
   <script src="assets/shaders/radial.js"></script>
+  <script src="assets/shaders/linear.js"></script>
+  <script src="assets/shaders/waves.js"></script>
   <script src="assets/main.js"></script>
 </body>
 </html> 
