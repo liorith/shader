@@ -117,3 +117,88 @@
 
   /* ... Restliche mobile Styles (innerhalb der Panels) bleiben unverändert ... */
 }
+
+/* Settings Panel spezifische Styles */
+#settingsPanel .control-group {
+  margin-bottom: 16px;
+}
+
+#settingsPanel .performance-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 20px;
+}
+
+#settingsPanel .performance-toggle:last-child {
+  margin-bottom: 0;
+}
+
+#settingsPanel .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+#settingsPanel .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#settingsPanel .toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+#settingsPanel .toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-color);
+  transition: .4s;
+  border-radius: 50%;
+}
+
+#settingsPanel input:checked + .toggle-slider {
+  background-color: var(--accent-color);
+}
+
+#settingsPanel input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* Mobile Styles für Settings Panel */
+@media (max-width: 768px) {
+  #settingsPanel .performance-toggle {
+    padding: 12px 15px;
+  }
+  
+  #settingsPanel .toggle-switch {
+    width: 52px;
+    height: 30px;
+  }
+  
+  #settingsPanel .toggle-slider:before {
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+  }
+  
+  #settingsPanel input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+  }
+}

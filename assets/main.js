@@ -423,6 +423,15 @@ const invertToggle = document.getElementById("invertToggle");
 const generateRandomColorsButton = document.getElementById("generateRandomColorsButton");
 const lowFPSToggle = document.getElementById("lowFPSToggle");
 
+// Neuer UI Element für Randomize Toggle
+const randomizeToggle = document.getElementById("randomizeToggle");
+
+// Neuer UI Element für Allow Bright Colors Toggle
+const allowBrightColorsToggle = document.getElementById("allowBrightColorsToggle");
+
+// Neuer UI Element für Randomize Speed Toggle
+const randomizeSpeedToggle = document.getElementById("randomizeSpeedToggle");
+
 // Neue UI Elemente für Panels und Panel Buttons
 const panelButtons = document.querySelectorAll(".panel-button");
 const controlPanels = document.querySelectorAll(".control-panel");
@@ -1020,6 +1029,132 @@ generateRandomColorsButton.addEventListener("click", () => {
   customPresetButton.classList.add("active");
 });
 
+// Variable für das Randomize Intervall
+let randomizeShaderInterval = null;
+let randomizeColorInterval = null;
+let randomizeSpeedInterval = null; // Neues Intervall für Geschwindigkeit
+const randomizeShaderIntervalTime = 10000; // 10 Sekunden
+const randomizeColorIntervalTime = 30000; // 30 Sekunden
+const randomizeSpeedIntervalTime = 20000; // 20 Sekunden
+
+// Funktion zum zufälligen Wechseln des Shader-Typs
+function randomizeShaderType() {
+    console.log("Zufälliger Wechsel des Shader-Typs...");
+
+    // Zufälligen Shader-Typ auswählen (außer dem aktuellen und 'mixed')
+    const availableShaderTypes = Object.keys(shaders).filter(type => type !== debugMode.stats.shaderType.toLowerCase() && type !== 'mixed');
+    if (availableShaderTypes.length > 0) {
+        const randomShaderType = availableShaderTypes[Math.floor(Math.random() * availableShaderTypes.length)];
+
+        // Finde den entsprechenden Button und simuliere einen Klick
+        const targetButton = document.querySelector(`.type-button[data-type='${randomShaderType}']`);
+        if (targetButton) {
+            targetButton.click(); // Nutze den bestehenden Event Listener
+        } else {
+             console.warn("Zufälliger Shader-Button nicht gefunden für Typ:", randomShaderType);
+        }
+    } else {
+        console.warn("Keine anderen Shader-Typen zum zufälligen Wechseln verfügbar.");
+    }
+}
+
+// Funktion zum zufälligen Wechseln der Farben mit Constraint für COLOUR_3
+function randomizeColors() {
+    console.log("Zufälliger Wechsel der Farben...");
+
+    // Zufällige Farben generieren
+    const randomColors = {
+        COLOUR_1: generateRandomColor(),
+        COLOUR_2: generateRandomColor(),
+        COLOUR_3: allowBrightColorsToggle.checked ? generateRandomColor() : generateRandomColorWithConstraint() // Nutze Constraint basierend auf Toggle
+    };
+
+    animateColorChange(randomColors); // Animation des Farbwechsels
+    updateCustomColorPickers(randomColors); // Update der Farbwähler
+    presetButtons.forEach(btn => btn.classList.remove("active")); // Deaktiviere alle Preset Buttons
+    customPresetButton.classList.add("active"); // Aktiviere den Custom Button
+}
+
+// Hilfsfunktion zum Generieren einer zufälligen Farbe mit Constraint für COLOUR_3
+function generateRandomColorWithConstraint() {
+    let r, g, b;
+    // Generiere zufällige RGB-Werte zwischen 0 und 150/255 (ca. 0.588)
+    r = Math.random() * (150 / 255);
+    g = Math.random() * (150 / 255);
+    b = Math.random() * (150 / 255);
+    return [r, g, b, 1.0]; // Füge Alpha-Wert hinzu
+}
+
+// Funktion zum zufälligen Ändern der Geschwindigkeit
+function randomizeSpeed() {
+    console.log("Zufällige Geschwindigkeit ändern...");
+    // Generiere eine zufällige Zahl zwischen 2.5 und 15
+    const minSpeed = 2.5;
+    const maxSpeed = 15.0;
+    const randomSpeed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
+    updateSpeed(randomSpeed);
+}
+
+// Event Listener für die neuen Randomize Toggles
+const randomizeShaderTypeToggle = document.getElementById("randomizeShaderTypeToggle");
+const randomizeColorsToggle = document.getElementById("randomizeColorsToggle");
+
+if (randomizeShaderTypeToggle) {
+    randomizeShaderTypeToggle.addEventListener("change", () => {
+        if (randomizeShaderTypeToggle.checked) {
+            console.log("Zufälliger Shaderwechsel aktiviert. Startet zufällige Shader-Änderungen.");
+            randomizeShaderType(); // Führe Shader-Änderung sofort einmal aus
+            randomizeShaderInterval = setInterval(randomizeShaderType, randomizeShaderIntervalTime);
+        } else {
+            console.log("Zufälliger Shaderwechsel deaktiviert. Stoppt zufällige Shader-Änderungen.");
+            clearInterval(randomizeShaderInterval);
+            randomizeShaderInterval = null;
+        }
+    });
+}
+
+if (randomizeColorsToggle) {
+    randomizeColorsToggle.addEventListener("change", () => {
+        if (randomizeColorsToggle.checked) {
+            console.log("Zufälliger Farbwechsel aktiviert. Startet zufällige Farb-Änderungen.");
+            randomizeColors(); // Führe Farb-Änderung sofort einmal aus
+            randomizeColorInterval = setInterval(randomizeColors, randomizeColorIntervalTime);
+        } else {
+            console.log("Zufälliger Farbwechsel deaktiviert. Stoppt zufällige Farb-Änderungen.");
+            clearInterval(randomizeColorInterval);
+            randomizeColorInterval = null;
+        }
+    });
+}
+
+// Event Listener für den neuen Randomize Speed Toggle
+if (randomizeSpeedToggle) {
+    randomizeSpeedToggle.addEventListener("change", () => {
+        if (randomizeSpeedToggle.checked) {
+            console.log("Randomize Speed Toggle aktiviert. Startet zufällige Geschwindigkeitsänderungen.");
+            randomizeSpeed(); // Führe Geschwindigkeitsänderung sofort einmal aus
+            randomizeSpeedInterval = setInterval(randomizeSpeed, randomizeSpeedIntervalTime);
+        } else {
+            console.log("Randomize Speed Toggle deaktiviert. Stoppt zufällige Geschwindigkeitsänderungen.");
+            clearInterval(randomizeSpeedInterval);
+            randomizeSpeedInterval = null;
+        }
+    });
+}
+
+// Event Listener für den Allow Bright Colors Toggle
+if (allowBrightColorsToggle) {
+    allowBrightColorsToggle.addEventListener("change", () => {
+        // Wenn der Randomize Colors Toggle aktiv ist, ändere die Farbe sofort, 
+        // um die Änderung sichtbar zu machen. Sonst hat der Toggle nur Effekt 
+        // beim nächsten manuellen oder automatischen Farbwechsel.
+        if (randomizeColorsToggle && randomizeColorsToggle.checked) {
+             randomizeColors();
+        }
+         console.log("Allow Bright Colors Toggle geändert:", allowBrightColorsToggle.checked);
+    });
+}
+
 // === Render Loop ===
 function render(currentTime) {
   frameCount++; // Erhöhe Frame-Zähler für FPS-Berechnung
@@ -1253,6 +1388,38 @@ resetSettingsButton.addEventListener("click", () => {
 
 // Funktion zur Initialisierung der Event-Listener
 function initEventListeners() {
+  // Panel Buttons
+  const panelButtons = document.querySelectorAll('.panel-button');
+  const panels = document.querySelectorAll('.control-panel');
+  
+  panelButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const panelId = button.getAttribute('data-panel');
+      
+      // Update active state of buttons
+      panelButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      
+      // Show selected panel, hide others
+      panels.forEach(panel => {
+        if (panel.getAttribute('data-panel') === panelId) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+    });
+  });
+
+  // Menu Button
+  const menuButton = document.getElementById('menuButton');
+  const panelButtonsContainer = document.querySelector('.panel-buttons');
+  
+  menuButton.addEventListener('click', () => {
+    menuButton.classList.toggle('open');
+    panelButtonsContainer.classList.toggle('hide');
+  });
+
   // Event Listener für Reset Button
   resetSettingsButton.addEventListener("click", () => {
     updateSpeed(defaultSettings.SPIN_SPEED);
@@ -1578,7 +1745,7 @@ function updateDebugInfo(currentTime) {
                       debugMode.gpuRenderTimes.shift();
                   }
               }
-    } else {
+        } else {
               break;
     }
       }
@@ -1657,7 +1824,7 @@ function updateDebugInfo(currentTime) {
                   formattedValue = `[${uniformValue.map(v => v.toFixed(2)).join(', ')}]`;
               } else if (typeof uniformValue === 'number') {
                   formattedValue = uniformValue.toFixed(2);
-              } else {
+        } else {
                   formattedValue = String(uniformValue);
               }
 
@@ -1699,10 +1866,10 @@ function updateDebugInfo(currentTime) {
       if (debugMode.isGpuTimerAvailable) {
           if (!debugMode.isGpuTimerDisjoint) {
         elements.gpuInfo.textContent = `${Math.round(debugMode.stats.estimatedGpuFps)} FPS (GPU)`;
-          } else {
+    } else {
         elements.gpuInfo.textContent = 'GPU: Disjoint';
-          }
-      } else {
+    }
+  } else {
       elements.gpuInfo.textContent = 'GPU: N/A';
       }
   }

@@ -146,7 +146,7 @@
     padding: 1rem;
     border-radius: 5px;
     text-align: center;
-    z-index: 1000;
+    z-index: 2500;
     max-width: 300px;
     opacity: 0;
     animation: warningSlideIn 0.3s ease-out forwards;

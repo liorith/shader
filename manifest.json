@@ -1,0 +1,190 @@
+{
+    "id": "com.liorith.shader",
+    "name": "Liorith - Project Shader",
+    "short_name": "Liorith Shader",
+    "description": "shader4all - A WebGL-based shader playground and sandbox for developers and creatives.",
+    "start_url": "/shader",
+    "scope": "/shader",
+    "display": "standalone",
+    "prefer_related_applications": false,
+    "display_override": ["standalone", "minimal-ui"],
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "any",
+    "lang": "en-US",
+    "dir": "ltr",
+  
+    "icons": [
+      {
+        "src": "/icon/icon-1024.png",
+        "sizes": "1024x1024",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/icon/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/icon/icon-256.png",
+        "sizes": "256x256",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/icon/icon-128.png",
+        "sizes": "128x128",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/icon/icon-96.png",
+        "sizes": "96x96",
+        "type": "image/png",
+        "purpose": "any"
+      }
+    ],
+  
+    "screenshots": [
+      {
+        "src": "/img/shader1.png",
+        "sizes": "2444x1185",
+		  "form_factor": "wide",
+        "type": "image/png",
+        "label": "Shader 1"
+      },
+      {
+        "src": "/img/shader2.png",
+        "sizes": "2485x1199",
+		  "form_factor": "wide",
+        "type": "image/png",
+        "label": "Shader 2"
+      },
+      {
+        "src": "/img/shader3.png",
+        "sizes": "2477x1192",
+		  "form_factor": "wide",
+        "type": "image/png",
+        "label": "Shader 3"
+      },
+		{
+        "src": "/img/shader1.png",
+        "sizes": "2444x1185",
+        "type": "image/png",
+        "label": "Shader 1"
+      },
+      {
+        "src": "/img/shader2.png",
+        "sizes": "2485x1199",
+        "type": "image/png",
+        "label": "Shader 2"
+      },
+      {
+        "src": "/img/shader3.png",
+        "sizes": "2477x1192",
+        "type": "image/png",
+        "label": "Shader 3"
+      },
+      {
+        "src": "/img/panel1.png",
+        "sizes": "396x517",
+        "type": "image/png",
+        "label": "Panel 1"
+      },
+      {
+        "src": "/img/panel2.png",
+        "sizes": "394x494",
+        "type": "image/png",
+        "label": "Panel 2"
+      },
+      {
+        "src": "/img/panel3.png",
+        "sizes": "397x757",
+        "type": "image/png",
+        "label": "Panel 3"
+      },
+      {
+        "src": "/img/panel4.png",
+        "sizes": "400x565",
+        "type": "image/png",
+        "label": "Panel 4"
+      },
+      {
+        "src": "/img/panel5.png",
+        "sizes": "403x664",
+        "type": "image/png",
+        "label": "Panel 5"
+      }
+    ],
+  
+    "categories": [
+      "shader",
+      "tools",
+      "sandbox"
+    ],
+  
+    "shortcuts": [
+        {
+        "name": "Current Version (Stable)",
+        "description": "The stable Version.",
+        "url": "/current",
+        "icons": [
+          {
+            "src": "/icon/shortcuts/icon-stable.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+          }
+        ]
+        },
+        {
+        "name": "New Version (Beta)",
+        "description": "The beta Version.",
+        "url": "/beta",
+        "icons": [
+          {
+            "src": "/icon/shortcuts/icon-beta.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+          }
+        ]
+        },
+        {
+        "name": "Development Version",
+        "description": "The Alpha Version.",
+        "url": "/alpha",
+        "icons": [
+          {
+            "src": "/icon/shortcuts/icon-alpha.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+          }
+        ]
+        },
+        {
+        "name": "Last Version",
+        "description": "The last Version.",
+        "url": "/old",
+        "icons": [
+          {
+            "src": "/icon/shortcuts/icon-old.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+          }
+        ]
+        },
+        {
+        "name": "All Versions",
+        "description": "All Versions.",
+        "url": "/versions",
+        "icons": [
+          {
+            "src": "/icon/shortcuts/icon-versions.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+          }
+        ]
+        }
+    ]
+  }

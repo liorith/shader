@@ -12,10 +12,12 @@
 
   <meta property="og:title" content="Project Shader | Liorith.com">
   <meta property="og:description" content="A simple Shader with much Effects ans Settings.">
-  <meta property="og:image" content="/icon/icon-1024.png">
+  <meta property="og:image" content="/icon/icon-512.png">
   <meta property="og:url" content="https://liorith.com/shader">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="liorith.com/shader">
+	
+  <link rel="manifest" href="./manifest.json">
 
   <!-- CSS-Dateien -->
   <link rel="stylesheet" href="assets/css/variables.css">
@@ -139,7 +141,6 @@
 
       <!-- Neuer Bereich für detaillierte GPU Infos - KORREKT verschachtelt -->
       <div id="debug-gpu-details" style="display: none;">
-         <div class="debug-section-title"> </div>
           <div class="debug-item">
             <span class="debug-label">Rendering</span>
             <span class="debug-value" id="debug-rendering-mode">-</span>
@@ -175,11 +176,14 @@
     <div class="panel-button" id="shaderPanelButton" data-panel="shader">
       Shader
     </div>
+    <div class="panel-button" id="settingsPanelButton" data-panel="settings">
+      Einstellungen
+    </div>
     <div class="panel-button" id="colorsPanelButton" data-panel="colors">
       Farben
     </div>
     <div class="panel-button" id="slidersPanelButton" data-panel="sliders">
-      Slider
+      Rendering
     </div>
     <div class="panel-button" id="effectsPanelButton" data-panel="effects">
       Effekte
@@ -190,6 +194,41 @@
 
     <!-- Shader Panel -->
     <div class="control-panel" id="shaderPanel" data-panel="shader">
+      <div class="control-group">
+        <h3>Shader Typ</h3>
+        <div class="shader-type-selector">
+          <button class="type-button large-button active" data-type="default" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Standard</button>
+          <button class="type-button large-button" data-type="mixed" data-tooltip="Gemischter Farbverlauf">Mixed</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="shader-type-selector">
+          <button class="type-button large-button" data-type="swirl" data-tooltip="Wirbelnder Farbverlauf">Swirl</button>
+          <button class="type-button large-button" data-type="turbulent" data-tooltip="Turbulenter Farbverlauf mit hoher Frequenz">Turbulent</button>
+          <button class="type-button large-button" data-type="wavy" data-tooltip="Wellenförmiger Farbverlauf">Wavy</button>
+          <button class="type-button large-button" data-type="fractal" data-tooltip="Fraktalartiger Farbverlauf">Fractal</button>
+          <button class="type-button large-button" data-type="radial" data-tooltip="Radialer Farbverlauf mit Jitter">Radial</button>
+          <button class="type-button large-button" data-type="grid" data-tooltip="Gitterartiger Farbverlauf">Grid</button>
+          <button class="type-button large-button" data-type="cellular" data-tooltip="Zellularer Farbverlauf">Cellular</button>
+          <button class="type-button large-button" data-type="wavegrid" data-tooltip="Kombinierter Gitter- und Welleneffekt">WaveGrid</button>
+          <button class="type-button large-button" data-type="spiral" data-tooltip="Mehrere ineinander verschlungene Spiralen">Spiral</button>
+          <button class="type-button large-button" data-type="pulse" data-tooltip="Rhythmische Pulseffekte">Pulse</button>
+        </div>
+      </div>
+       <div class="control-group">
+         <h3>Zufällige Änderungen</h3>
+          <div class="performance-toggle" data-tooltip="Wechselt den Shader-Typ alle 10 Sekunden zufällig.">
+            <label for="randomizeShaderTypeToggle">Zufälliger Shaderwechsel</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="randomizeShaderTypeToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+       </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="control-panel" id="settingsPanel" data-panel="settings">
       <div class="control-group">
         <h3>Shader</h3>
         <div class="performance-toggle" data-tooltip="Schaltet den Shader-Effekt ein oder aus, um Ressourcen zu sparen.">
@@ -217,13 +256,6 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="performance-toggle" data-tooltip="Blendet detaillierte Uniforms-Informationen im Debug-Menü ein.">
-          <label for="showUniformsToggle">Erweiterte Debug Infos anzeigen</label>
-          <label class="toggle-switch">
-            <input type="checkbox" id="showUniformsToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
         <div class="performance-toggle" data-tooltip="Blendet detaillierte GPU-Informationen im Debug-Menü ein.">
           <label for="showGpuDetailsToggle">GPU Details anzeigen</label>
           <label class="toggle-switch">
@@ -231,27 +263,12 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-      </div>
-
-      <div class="control-group">
-        <h3>Shader Typ</h3>
-        <div class="shader-type-selector">
-          <button class="type-button large-button active" data-type="default" data-tooltip="Kreisförmiger Farbverlauf mit dynamischer Bewegung">Standard</button>
-          <button class="type-button large-button" data-type="mixed" data-tooltip="Gemischter Farbverlauf">Mixed</button>
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="shader-type-selector">
-          <button class="type-button large-button" data-type="swirl" data-tooltip="Wirbelnder Farbverlauf">Swirl</button>
-          <button class="type-button large-button" data-type="turbulent" data-tooltip="Turbulenter Farbverlauf mit hoher Frequenz">Turbulent</button>
-          <button class="type-button large-button" data-type="wavy" data-tooltip="Wellenförmiger Farbverlauf">Wavy</button>
-          <button class="type-button large-button" data-type="fractal" data-tooltip="Fraktalartiger Farbverlauf">Fractal</button>
-          <button class="type-button large-button" data-type="radial" data-tooltip="Radialer Farbverlauf mit Jitter">Radial</button>
-          <button class="type-button large-button" data-type="grid" data-tooltip="Gitterartiger Farbverlauf">Grid</button>
-          <button class="type-button large-button" data-type="cellular" data-tooltip="Zellularer Farbverlauf">Cellular</button>
-          <button class="type-button large-button" data-type="wavegrid" data-tooltip="Kombinierter Gitter- und Welleneffekt">WaveGrid</button>
-          <button class="type-button large-button" data-type="spiral" data-tooltip="Mehrere ineinander verschlungene Spiralen">Spiral</button>
-          <button class="type-button large-button" data-type="pulse" data-tooltip="Rhythmische Pulseffekte">Pulse</button>
+        <div class="performance-toggle" data-tooltip="Blendet detaillierte Uniforms-Informationen im Debug-Menü ein.">
+          <label for="showUniformsToggle">Uniforms anzeigen</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showUniformsToggle">
+            <span class="toggle-slider"></span>
+          </label>
         </div>
       </div>
     </div>
@@ -275,6 +292,24 @@
           <button class="preset-button" data-preset="monochrom" data-tooltip="Eine Monochrome Schwarz-Weiß Palette">Monochrom</button>
           <button class="preset-button" data-preset="custom" data-tooltip="Erstellen Sie Ihre eigene individuelle Farbpalette">Custom</button>
         </div>
+      </div>
+      <div class="control-group">
+        <div class="performance-toggle" data-tooltip="Wechselt die Farben alle 30 Sekunden zufällig.">
+          <label for="randomizeColorsToggle">Zufälliger Farbwechsel</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="randomizeColorsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="performance-toggle" data-tooltip="Erlaubt, dass die Akzentfarbe (dritte Farbe) heller als normalerweise zufällig generiert wird (nicht empfohlen).">
+         <label for="allowBrightColorsToggle">Helle Farben erlauben (nicht empfohlen)</label>
+         <label class="toggle-switch">
+           <input type="checkbox" id="allowBrightColorsToggle">
+           <span class="toggle-slider"></span>
+         </label>
+        </div>
+      </div>
+      <div class="control-group">
         <div class="custom-color-section">
           <h4>Benutzerdefiniert</h4>
           <button class="generate-random-button" id="generateRandomColorsButton" data-tooltip="Erzeugt eine zufällige Farbpalette.">Zufällig generieren</button>
@@ -291,7 +326,9 @@
             <input type="color" id="customColor3" value="#191919">
           </div>
         </div>
+      </div>
         <!-- Invert Colors Toggle -->
+      <div class="control-group">
         <div class="performance-toggle" data-tooltip="Invertiert die Farben des Shaders.">
           <label for="invertToggle">Farben invertieren</label>
           <label class="toggle-switch">
@@ -368,6 +405,13 @@
             <input type="number" id="speedInput" min="0" max="15" value="5.0" step="0.1">
           </div>
         </div>
+         <div class="performance-toggle" data-tooltip="Ändert die Geschwindigkeit alle 20 Sekunden zufällig.">
+           <label for="randomizeSpeedToggle">Zufällige Geschwindigkeit</label>
+           <label class="toggle-switch">
+             <input type="checkbox" id="randomizeSpeedToggle">
+             <span class="toggle-slider"></span>
+           </label>
+         </div>
       </div>
       <!-- Effect Controls (Verschoben aus Slider Panel) -->
       <div class="control-group">
