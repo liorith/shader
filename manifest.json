@@ -3,8 +3,8 @@
     "name": "Liorith - Project Shader",
     "short_name": "Liorith Shader",
     "description": "shader4all - A WebGL-based shader playground and sandbox for developers and creatives.",
-    "start_url": "/shader",
-    "scope": "/shader",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "prefer_related_applications": false,
     "display_override": ["standalone", "minimal-ui"],
@@ -138,53 +138,5 @@
           }
         ]
         },
-        {
-        "name": "New Version (Beta)",
-        "description": "The beta Version.",
-        "url": "/beta",
-        "icons": [
-          {
-            "src": "/icon/shortcuts/icon-beta.png",
-            "sizes": "1024x1024",
-            "type": "image/png"
-          }
-        ]
-        },
-        {
-        "name": "Development Version",
-        "description": "The Alpha Version.",
-        "url": "/alpha",
-        "icons": [
-          {
-            "src": "/icon/shortcuts/icon-alpha.png",
-            "sizes": "1024x1024",
-            "type": "image/png"
-          }
-        ]
-        },
-        {
-        "name": "Last Version",
-        "description": "The last Version.",
-        "url": "/old",
-        "icons": [
-          {
-            "src": "/icon/shortcuts/icon-old.png",
-            "sizes": "1024x1024",
-            "type": "image/png"
-          }
-        ]
-        },
-        {
-        "name": "All Versions",
-        "description": "All Versions.",
-        "url": "/versions",
-        "icons": [
-          {
-            "src": "/icon/shortcuts/icon-versions.png",
-            "sizes": "1024x1024",
-            "type": "image/png"
-          }
-        ]
-        }
     ]
   }
